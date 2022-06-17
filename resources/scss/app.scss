@@ -93,3 +93,11 @@ section.login {
   border-radius: 50px !important;
   padding-left: 8px !important;
 }
+
+.orders {
+  min-height: calc(95vh - 86px);
+}
+
+a.link {
+  color: $primary;
+}

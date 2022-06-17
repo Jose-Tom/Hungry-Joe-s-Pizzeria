@@ -6,7 +6,7 @@
       <button
         class="px-6 py-2 rounded-full text-white font-bold mt-4 btn-primary"
       >
-        Order Now
+        <a href="#OrderItems">Order Now</a>
       </button>
     </div>
     <div class="w-1/2">
@@ -16,7 +16,7 @@
 </section>
 <section class="menu container mx-auto py-8">
   <h1 class="text-xl font-bold mb-8">All Pizzas</h1>
-  <div class="grid grid-cols-4 gap-y-12 gap-x-16">
+  <div id="OrderItems" class="grid grid-cols-4 gap-y-12 gap-x-16">
     <% pizzas.forEach((pizza) => { %>
     <div class="w-64">
       <img class="h-40 mb-4 mx-auto" src="/img/<%= pizza.image %>" alt="" />
