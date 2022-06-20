@@ -53,13 +53,13 @@ function authController() {
       }
 
       // Check if email exists
-      User.exists({ email: email }, (err, result) => {
+      await User.exists({ email: email }, (err, result) => {
         if (result) {
           req.flash("error", "Email already taken");
           req.flash("name", name);
           req.flash("number", number);
           req.flash("email", email);
-          return res.redirect("/register");
+          //    return res.redirect("/register");
         }
       });
 
@@ -86,7 +86,7 @@ function authController() {
           });
         })
         .catch((err) => {
-          req.flash("error", "Something went wrong");
+          req.flash("error", " Error creating user");
           return res.redirect("/register");
         });
     },
@@ -96,7 +96,7 @@ function authController() {
         if (err) {
           return next(err);
         }
-        res.redirect("/");
+        return res.redirect("/");
       });
     },
   };

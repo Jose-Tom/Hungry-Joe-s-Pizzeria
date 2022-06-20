@@ -8,6 +8,7 @@ const session = require("express-session");
 const flash = require("express-flash");
 const MongoDbStore = require("connect-mongo");
 const passport = require("passport");
+const Emitter = require("events");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,6 +26,10 @@ mongoose
     console.log(err);
   });
 
+// Event emitter
+const eventEmitter = new Emitter();
+app.set("eventEmitter", eventEmitter);
+
 // SESSION config
 app.use(
   session({
@@ -39,6 +44,12 @@ app.use(
 );
 
 app.use(flash());
+
+// Disable Cache
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 
 // Assets
 app.use(express.static("public"));
@@ -59,6 +70,7 @@ app.use(passport.session());
 // Global middleware
 app.use((req, res, next) => {
   res.locals.session = req.session;
+  // console.log(req.session.cart);
   res.locals.user = req.user;
   next();
 });
@@ -70,6 +82,24 @@ app.set("view engine", "ejs");
 require("./routes/web")(app);
 
 // START SERVER
-app.listen(PORT, () => {
-  console.log(`listening on port ${PORT}...`);
+const server = app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
+});
+
+// Socket
+
+const io = require("socket.io")(server);
+io.on("connection", (socket) => {
+  // Join
+  socket.on("join", (orderId) => {
+    socket.join(orderId);
+  });
+});
+
+eventEmitter.on("orderUpdated", (data) => {
+  io.to(`order_${data.id}`).emit("orderUpdated", data);
+});
+
+eventEmitter.on("orderPlaced", (data) => {
+  io.to("adminRoom").emit("orderPlaced", data);
 });

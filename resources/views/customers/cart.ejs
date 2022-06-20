@@ -30,6 +30,10 @@
         <% if(user) { %>
         <div>
           <form action="/orders" method="post" class="mt-12">
+            <% if(messages.error) { %>
+            <span class="text-red-500 text-sm"><%= messages.error %></span>
+            <br />
+            <% } %>
             <input
               name="phone"
               class="border border-gray-400 p-2 w-1/2 mb-4"
