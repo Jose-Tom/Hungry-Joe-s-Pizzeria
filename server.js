@@ -72,6 +72,7 @@ app.use((req, res, next) => {
   res.locals.session = req.session;
   // console.log(req.session.cart);
   res.locals.user = req.user;
+  // console.log(req.user);
   next();
 });
 

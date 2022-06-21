@@ -1,0 +1,56 @@
+<div class="add-items flex items-center justify-center p-12">
+  <div class="mx-auto w-full max-w-[550px]">
+    <h1 class="text-2xl font-bold py-5">Add items</h1>
+    <form action="/admin/additem" method="POST" enctype="multipart/form-data">
+      <div class="mb-5">
+        <label
+          for="name"
+          class="mb-3 block text-base font-medium text-[#07074D]"
+        >
+          Pizza name
+        </label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          placeholder="Item Name"
+          class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-black outline-none focus:shadow-md"
+        />
+      </div>
+      <div class="mb-5">
+        <label for="price" class="mb-3 block text-base font-medium text-black">
+          Price
+        </label>
+        <input
+          type="number"
+          name="price"
+          id="price"
+          class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium outline-none focus:shadow-md"
+        />
+      </div>
+      <div class="mb-5">
+        <select
+          id="category"
+          name="category"
+          class="mt-5 block w-full py-3 px-6 text-base font-medium border border-gray-300 bg-white rounded-md shadow-sm"
+        >
+          <option>Veg</option>
+          <option>Non-Veg</option>
+        </select>
+      </div>
+      <div class="mb-5">
+        <label for="image" class="mb-3 block text-base font-medium">
+          Upload display image
+        </label>
+        <input type="file" id="fileinput" name="image" />
+      </div>
+      <div>
+        <button
+          class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none btn-primary"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

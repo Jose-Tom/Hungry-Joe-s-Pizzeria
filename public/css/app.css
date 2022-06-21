@@ -325,6 +325,14 @@ section.hero {
   background: #b23301 !important;
 }
 
+.btn-danger {
+  background: red !important;
+  transition: all 0.3s ease-in-out;
+}
+.btn-danger:hover {
+  background: rgb(159, 0, 0) !important;
+}
+
 .footer-copyright {
   background: #fe5f1e;
   color: white;
@@ -483,4 +491,37 @@ section.status {
   float: right;
   font-size: 14px;
   margin-top: 8px;
+}
+
+.itemQuantity {
+  font-size: large;
+  font-weight: bold;
+  width: 20% !important;
+}
+
+.circle-icon {
+  font-size: 32px !important;
+}
+
+.add-items {
+  background: #f8f8f8;
+  min-height: calc(100vh - 86px);
+  padding-top: 3rem;
+}
+
+.menuitemslist {
+  min-height: calc(100vh - 86px);
+  padding-top: 3rem;
+}
+
+.background-secondary {
+  background: #f8f8f8;
+}
+
+.top-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5rem 5rem;
+  border: 5px solid black;
 }

@@ -1,0 +1,101 @@
+<section class="login flex justify-center pt-24">
+  <div class="w-full max-w-2xl">
+    <form
+      action="/user/update"
+      method="POST"
+      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full"
+    >
+      <div class="flex items-center justify-between">
+        <h1 class="text-black text-2xl font-bold mb-5 mx-auto">User Details</h1>
+      </div>
+
+      <% if(messages.error) { %>
+      <span class="text-red-500 text-sm"><%= messages.error %></span>
+      <% } %>
+      <div class="mb-4">
+        <label
+          class="block text-gray-700 text-lg font-bold mb-2"
+          for="username"
+        >
+          Name
+        </label>
+        <input
+          name="name"
+          value="<%= user.name %>"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
+          id="username"
+          type="text"
+          placeholder="<%= user.name %>"
+        />
+      </div>
+      <div class="mb-4">
+        <label
+          class="block text-gray-700 text-lg font-bold mb-2"
+          for="username"
+        >
+          Phone Number
+        </label>
+        <input
+          name="number"
+          value="<%= user.number %>"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="number"
+          type="number"
+          placeholder="Enter your phone number"
+        />
+      </div>
+      <div class="mb-4">
+        <label
+          class="block text-gray-700 text-lg font-bold mb-2"
+          for="username"
+        >
+          Email
+        </label>
+        <input
+          name="email"
+          value="<%= user.email %>"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="email"
+          type="email"
+          placeholder="Enter your email"
+        />
+      </div>
+      <div class="mb-6">
+        <label
+          class="block text-gray-700 text-lg font-bold mb-2"
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          name="password"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+          id="password"
+          type="password"
+          placeholder="******************"
+        />
+      </div>
+      <div class="flex items-center justify-between">
+        <button
+          class="btn-primary rounded-full text-white font-bold py-2 px-4 w-2/3 rounded focus:outline-none focus:shadow-outline mx-auto"
+          type="submit"
+        >
+          Update your details
+        </button>
+      </div>
+    </form>
+    <div class="flex items-center align-center w-full">
+      <form action="/user/delete" method="POST">
+        <input type="hidden" name="email" value="<%= user.email %>" />
+        <input type="hidden" name="id" value="<%= user.id %>" />
+        <button
+          class="btn-danger rounded-full text-white font-bold py-2 px-4 my-10 rounded focus:outline-none focus:shadow-outline"
+          type="submit"
+          onClick="return confirm('Are you sure to delete? This cannnot be undone.')"
+        >
+          Delete your account
+        </button>
+      </form>
+    </div>
+  </div>
+</section>

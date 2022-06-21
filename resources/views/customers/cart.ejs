@@ -6,14 +6,40 @@
       <h1 class="font-bold ml-4 text-2xl">Order summary</h1>
     </div>
     <div class="pizza-list">
+      <form action="/emptycart" method="post">
+        <button
+          class="btn-danger px-6 py-2 rounded-full text-white font-bold my-6"
+          type="submit"
+          onClick="return confirm('Are you sure to delete?')"
+        >
+          Empty Cart
+        </button>
+      </form>
       <% for(let pizza of Object.values(session.cart.items)) { %>
-      <div class="flex items-center my-8">
+      <div class="flex items-center my-8 justify-around">
         <img class="w-24" src="/img/<%= pizza.item.image %>" alt="" />
-        <div class="flex-1 ml-4">
+        <div class="flex w-50 ml-4 text-lg">
           <h1><%= pizza.item.name %></h1>
-          <span><%= pizza.item.size %></span>
         </div>
-        <span class="flex-1"><%= pizza.qty %> Pcs</span>
+        <div class="itemQuantity flex flex-row ml-4 justify-around w-50">
+          <form action="/cart/minusitem" method="post">
+            <input type="hidden" name="pizza" value="<%= pizza.item._id %>" />
+            <input type="hidden" name="price" value="<%= pizza.item.price %>" />
+            <button
+              type="submit"
+              class="circle-icon las la-minus-circle"
+            ></button>
+          </form>
+          <div><%= pizza.qty %> Pcs</div>
+          <form action="/cart/plusitem" method="post">
+            <input type="hidden" name="pizza" value="<%= pizza.item._id %>" />
+            <input type="hidden" name="price" value="<%= pizza.item.price %>" />
+            <button
+              type="submit"
+              class="circle-icon las la-plus-circle"
+            ></button>
+          </form>
+        </div>
         <span class="font-bold text-lg"
           >₹ <%= pizza.item.price * pizza.qty %></span
         >

@@ -49,6 +49,14 @@ section.hero {
   }
 }
 
+.btn-danger {
+  background: red !important;
+  transition: $smooth;
+  &:hover {
+    background: rgb(159, 0, 0) !important;
+  }
+}
+
 .footer-copyright {
   background: $primary;
   color: white;
@@ -207,4 +215,37 @@ section.status {
   float: right;
   font-size: 14px;
   margin-top: 8px;
+}
+
+.itemQuantity {
+  font-size: large;
+  font-weight: bold;
+  width: 20% !important;
+}
+
+.circle-icon {
+  font-size: 32px !important;
+}
+
+.add-items {
+  background: $secondary;
+  min-height: calc(100vh - 86px);
+  padding-top: 3rem;
+}
+
+.menuitemslist {
+  min-height: calc(100vh - 86px);
+  padding-top: 3rem;
+}
+
+.background-secondary {
+  background: $secondary;
+}
+
+.top-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5rem 5rem;
+  border: 5px solid black;
 }
