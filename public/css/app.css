@@ -281,10 +281,10 @@ body {
   color: #232323;
 }
 
-nav li:last-child a {
+nav li .cartbutton {
   background: #fe5f1e;
 }
-nav li:last-child a:hover {
+nav li .cartbutton:hover {
   background: #b23301;
 }
 
@@ -331,6 +331,14 @@ section.hero {
 }
 .btn-danger:hover {
   background: rgb(159, 0, 0) !important;
+}
+
+.btn-success {
+  background: rgb(17, 230, 46) !important;
+  transition: all 0.3s ease-in-out;
+}
+.btn-success:hover {
+  background: rgb(7, 111, 21) !important;
 }
 
 .footer-copyright {
@@ -496,7 +504,7 @@ section.status {
 .itemQuantity {
   font-size: large;
   font-weight: bold;
-  width: 20% !important;
+  width: 70% !important;
 }
 
 .circle-icon {
@@ -509,7 +517,8 @@ section.status {
   padding-top: 3rem;
 }
 
-.menuitemslist {
+.menuitemslist,
+.index-page {
   min-height: calc(100vh - 86px);
   padding-top: 3rem;
 }
@@ -524,4 +533,9 @@ section.status {
   justify-content: space-between;
   padding: 5rem 5rem;
   border: 5px solid black;
+}
+
+.userTable {
+  min-height: calc(100vh - 86px);
+  padding-top: 6rem;
 }

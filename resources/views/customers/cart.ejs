@@ -1,5 +1,5 @@
 <section class="cart py-16">
-  <% if(session.cart) { %>
+  <% if(session.cart?.deleted===false) { %>
   <div class="order container mx-auto w-1/2">
     <div class="flex items-center border-b border-gray-300 pb-4">
       <img src="/img/cart-black.png" alt="" />
@@ -15,16 +15,16 @@
           Empty Cart
         </button>
       </form>
-      <% for(let pizza of Object.values(session.cart.items)) { %>
-      <div class="flex items-center my-8 justify-around">
-        <img class="w-24" src="/img/<%= pizza.item.image %>" alt="" />
+      <% for(let pizza of Object.values(session.cart.cartItems.items)) { %>
+      <div class="my-8 grid grid-cols-4 gap-4 flex justify-center items-center">
+        <img class="w-24" src="/img/<%= pizza.image %>" alt="" />
         <div class="flex w-50 ml-4 text-lg">
-          <h1><%= pizza.item.name %></h1>
+          <h1><%= pizza.name %></h1>
         </div>
-        <div class="itemQuantity flex flex-row ml-4 justify-around w-50">
+        <div class="itemQuantity grid grid-cols-3 ml-4">
           <form action="/cart/minusitem" method="post">
-            <input type="hidden" name="pizza" value="<%= pizza.item._id %>" />
-            <input type="hidden" name="price" value="<%= pizza.item.price %>" />
+            <input type="hidden" name="pizza" value="<%= pizza._id %>" />
+            <input type="hidden" name="price" value="<%= pizza.price %>" />
             <button
               type="submit"
               class="circle-icon las la-minus-circle"
@@ -32,25 +32,51 @@
           </form>
           <div><%= pizza.qty %> Pcs</div>
           <form action="/cart/plusitem" method="post">
-            <input type="hidden" name="pizza" value="<%= pizza.item._id %>" />
-            <input type="hidden" name="price" value="<%= pizza.item.price %>" />
+            <input type="hidden" name="pizza" value="<%= pizza._id %>" />
+            <input type="hidden" name="price" value="<%= pizza.price %>" />
             <button
               type="submit"
               class="circle-icon las la-plus-circle"
             ></button>
           </form>
         </div>
-        <span class="font-bold text-lg"
-          >₹ <%= pizza.item.price * pizza.qty %></span
-        >
+        <span class="font-bold text-lg">₹ <%= pizza.price * pizza.qty %></span>
       </div>
       <% } %>
+      <!-- <% for(let pizza of Object.values(session.cart.cartItems.items)) { %>
+      <div class="flex items-center my-8 justify-around">
+        <img class="w-24" src="/img/<%= pizza.image %>" alt="" />
+        <div class="flex w-50 ml-4 text-lg">
+          <h1><%= pizza.name %></h1>
+        </div>
+        <div class="itemQuantity flex flex-row ml-4 justify-around w-50">
+          <form action="/cart/minusitem" method="post">
+            <input type="hidden" name="pizza" value="<%= pizza._id %>" />
+            <input type="hidden" name="price" value="<%= pizza.price %>" />
+            <button
+              type="submit"
+              class="circle-icon las la-minus-circle"
+            ></button>
+          </form>
+          <div><%= pizza.qty %> Pcs</div>
+          <form action="/cart/plusitem" method="post">
+            <input type="hidden" name="pizza" value="<%= pizza._id %>" />
+            <input type="hidden" name="price" value="<%= pizza.price %>" />
+            <button
+              type="submit"
+              class="circle-icon las la-plus-circle"
+            ></button>
+          </form>
+        </div>
+        <span class="font-bold text-lg">₹ <%= pizza.price * pizza.qty %></span>
+      </div>
+      <% } %> -->
       <hr />
       <div class="text-right py-4">
         <div>
           <span class="text-lg font-bold">Total Amount:</span>
           <span class="amount text-2xl font-bold ml-2"
-            >₹<%= session.cart.totalPrice %></span
+            >₹<%= session.cart.cartItems.totalPrice %></span
           >
         </div>
         <% if(user) { %>
@@ -62,6 +88,7 @@
             <% } %>
             <input
               name="phone"
+              value="<%= user.number %>"
               class="border border-gray-400 p-2 w-1/2 mb-4"
               type="number"
               placeholder="Phone number"

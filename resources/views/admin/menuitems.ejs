@@ -11,8 +11,8 @@
 
     <div id="OrderItems" class="grid grid-cols-4 gap-y-12 gap-x-16">
       <% pizzas.forEach((pizza) => { %>
-      <form action="/admin/deleteitem" method="POST">
-        <input type="hidden" name="pizza" value="<%= pizza.name %>" />>
+      <form action="/admin/edititem" method="POST">
+        <input type="hidden" name="pizza" value="<%= pizza.name %>" />
         <div class="w-64">
           <img class="h-40 mb-4 mx-auto" src="/img/<%= pizza.image %>" alt="" />
           <div class="text-center">
@@ -24,9 +24,9 @@
               <span class="font-bold text-lg"> ₹ <%= pizza.price %> </span>
               <button
                 data-pizza="<%= JSON.stringify(pizza) %>"
-                class="btn-danger py-1 px-6 rounded-full flex items-center font-bold"
+                class="btn-primary text-white py-1 px-6 rounded-full flex items-center font-bold"
               >
-                <span class="ml-4">Remove</span>
+                <span class="ml-4">Edit item</span>
               </button>
             </div>
           </div>

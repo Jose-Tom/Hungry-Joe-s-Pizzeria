@@ -1,4 +1,5 @@
 const Order = require("../../../models/order");
+const Cart = require("../../../models/cart");
 const moment = require("moment");
 function orderController() {
   return {
@@ -12,27 +13,52 @@ function orderController() {
 
       const order = new Order({
         customerId: req.user._id,
-        items: req.session.cart?.items,
+        totalPrice: req.session.cart.cartItems.totalPrice,
+        items: req.session.cart?.cartItems.items,
         phone,
         address,
       });
       order
         .save()
         .then((result) => {
-          Order.populate(result, { path: "customerId" }, (err, placedOrder) => {
-            req.flash("success", "Order placed successfully");
-            delete req.session.cart;
-            // Emit
-            const eventEmitter = req.app.get("eventEmitter");
-            eventEmitter.emit("orderPlaced", placedOrder);
-            return res.redirect("/customer/orders");
-          });
+          Order.populate(
+            result,
+            { path: "customerId" },
+            async (err, placedOrder) => {
+              req.flash("success", "Order placed successfully");
+              req.session.cart = {
+                cartItems: {
+                  items: [
+                    {
+                      productId: "",
+                      name: "",
+                      category: "",
+                      image: "",
+                      price: 0,
+                      qty: 0,
+                    },
+                  ],
+                  totalPrice: 0,
+                  totalQty: 0,
+                },
+                _id: "",
+                customerId: "",
+                deleted: true,
+              };
+              await Cart.deleteOne({ customerId: req.user._id });
+              // Emit
+              const eventEmitter = req.app.get("eventEmitter");
+              eventEmitter.emit("orderPlaced", placedOrder);
+              return res.redirect("/customer/orders");
+            }
+          );
         })
         .catch((err) => {
           req.flash("error", "Something went wrong");
           return res.redirect("/cart");
         });
     },
+
     async index(req, res) {
       const orders = await Order.find({ customerId: req.user._id }, null, {
         sort: { createdAt: -1 },

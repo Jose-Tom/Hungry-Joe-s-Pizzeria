@@ -2,13 +2,19 @@ import axios from "axios";
 import Noty from "noty";
 import moment from "moment";
 import { initAdmin } from "./admin";
+import user from "../../app/models/user";
 
 let addToCart = document.querySelectorAll(".add-to-cart");
+let blockUser = document.querySelectorAll(".block-user");
+let unblockUser = document.querySelectorAll(".unblock-user");
+let removeUser = document.querySelectorAll(".remove-user");
 
 function updateCart(pizza) {
+  // console.log(pizza);
   axios
-    .post("/update-cart", pizza)
+    .post("/cart/update", pizza)
     .then((res) => {
+      // console.log(res);
       cartCounter.innerText = res.data.totalQty;
       new Noty({
         type: "success",
@@ -31,6 +37,33 @@ addToCart.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     let pizza = JSON.parse(btn.dataset.pizza);
     updateCart(pizza);
+  });
+});
+
+blockUser.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    let user = JSON.parse(btn.dataset.user);
+    axios.post("/admin/blockuser", { user: user }).then((response) => {
+      window.location.reload();
+    });
+  });
+});
+
+unblockUser.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    let user = JSON.parse(btn.dataset.user);
+    axios.post("/admin/unblockuser", { user: user }).then((response) => {
+      window.location.reload();
+    });
+  });
+});
+
+removeUser.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    let user = JSON.parse(btn.dataset.user);
+    axios.post("/admin/removeuser", { user: user }).then((response) => {
+      window.location.reload();
+    });
   });
 });
 

@@ -1,0 +1,59 @@
+<div class="background-secondary">
+  <div class="container container-fluid userTable mx-auto">
+    <table id="myUserTable" class="display" style="width: 100%">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone Number</th>
+          <th>Email</th>
+          <th>Block</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach((user) => { %> <% if(user.email !== 'admin@gmail.com')
+        { %>
+        <tr>
+          <td><%= user.name %></td>
+          <td><%= user.number %></td>
+          <td><%= user.email %></td>
+          <td>
+            <% if(user.isBlocked === false) {%>
+            <button
+              class="block-user btn btn-danger btn-xs block px-5 py-2 rounded-full text-white"
+              data-user="<%= JSON.stringify(user) %>"
+            >
+              Block
+            </button>
+            <% } else {%>
+            <button
+              class="unblock-user btn btn-success btn-xs block px-5 py-2 rounded-full text-white"
+              data-user="<%= JSON.stringify(user) %>"
+            >
+              Unblock
+            </button>
+            <% } %>
+          </td>
+          <td>
+            <button
+              class="remove-user btn btn-danger btn-xs block px-5 py-2 rounded-full text-white"
+              data-user="<%= JSON.stringify(user) %>"
+            >
+              Remove
+            </button>
+          </td>
+        </tr>
+        <% } %> <% }) %>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Name</th>
+          <th>Phone Number</th>
+          <th>Email</th>
+          <th>Block</th>
+          <th>Remove</th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>

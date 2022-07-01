@@ -10,6 +10,7 @@ const dataController = require("../app/http/controllers/admin/dataController");
 const guest = require("../app/http/middlewares/guest");
 const auth = require("../app/http/middlewares/auth");
 const admin = require("../app/http/middlewares/admin");
+const confirmpassword = require("../app/http/middlewares/confirmpassword");
 
 const multer = require("multer");
 
@@ -38,22 +39,28 @@ const upload = multer({
 function initRoutes(app) {
   // ROUTES
   app.get("/", homeController().index);
+  app.get("/menu", auth, homeController().menu);
 
   app.get("/login", guest, authController().login);
   app.post("/login", authController().postLogin);
 
+  app.get("/otplogin", authController().otploginpage);
+  app.post("/otplogin", authController().otploginsend);
+  app.get("/otploginverify", authController().otpverifypage);
+  app.post("/otploginverify", authController().otploginverify);
+
   app.get("/register", guest, authController().register);
-  app.post("/register", authController().postRegister);
+  app.post("/register", confirmpassword, authController().postRegister);
 
   app.post("/logout", authController().logout);
   app.post("/user/update", auth, authController().update);
   app.post("/user/delete", auth, authController().delete);
 
   // Customer routes
-  // app.post("/orders", auth, orderController().store);
+
   app.post("/orders", auth, orderController().store);
   app.get("/cart", cartController().index);
-  app.post("/update-cart", cartController().update);
+  app.post("/cart/update", cartController().update);
   app.post("/emptycart", cartController().delete);
   app.post("/cart/minusitem", cartController().minusitem);
   app.post("/cart/plusitem", cartController().plusitem);
@@ -73,8 +80,20 @@ function initRoutes(app) {
     upload.single("image"),
     dataController().addItem
   );
+
+  app.post("/admin/edititem", admin, dataController().editItemPage);
   app.post("/admin/deleteitem", admin, dataController().deleteItem);
+  app.post(
+    "/admin/updateitem",
+    admin,
+    upload.single("image"),
+    dataController().updateitem
+  );
   app.get("/admin/reports", admin, dataController().reports);
+
+  app.post("/admin/blockuser", admin, authController().blockuser);
+  app.post("/admin/unblockuser", admin, authController().unblockuser);
+  app.post("/admin/removeuser", admin, authController().removeuser);
 }
 
 module.exports = initRoutes;

@@ -14,6 +14,7 @@ export function initAdmin(socket) {
     })
     .then((res) => {
       orders = res.data;
+      // console.log(orders);
       markup = generateMarkup(orders);
       orderTableBody.innerHTML = markup;
     })
@@ -22,10 +23,11 @@ export function initAdmin(socket) {
     });
   function renderItems(items) {
     let parsedItems = Object.values(items);
+    // console.log(parsedItems);
     return parsedItems
       .map((menuItem) => {
         return `
-              <p>${menuItem.item.name} - ${menuItem.qty} pcs </p>
+              <p>${menuItem.name} - ${menuItem.qty} pcs </p>
           `;
       })
       .join("");

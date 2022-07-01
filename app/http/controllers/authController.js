@@ -2,6 +2,13 @@ const User = require("../../models/user");
 const Order = require("../../models/order");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+const { UserPage } = require("twilio/lib/rest/ipMessaging/v1/service/user");
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require("twilio")(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
 function authController() {
   const _getRedirectUrl = (req) => {
@@ -11,13 +18,94 @@ function authController() {
     login(req, res) {
       res.render("auth/login");
     },
-    postLogin(req, res, next) {
+
+    otploginpage(req, res) {
+      res.render("auth/otplogin", { number: req.session.register?.number });
+    },
+
+    otpverifypage(req, res) {
+      res.render("auth/otploginVerify");
+    },
+
+    otploginsend(req, res) {
+      if (req.body.number) {
+        client.verify
+          .services(process.env.TWILIO_SERVICE_ID)
+          .verifications.create({
+            to: `+91${req.body.number}`,
+            channel: "sms",
+          })
+          .then((data) => {
+            req.session.number = req.body.number;
+            return res.redirect("/otploginverify");
+          });
+      } else {
+        return res.render("auth/otplogin");
+      }
+    },
+
+    otploginverify(req, res) {
+      // console.log(req.body);
+      client.verify
+        .services(process.env.TWILIO_SERVICE_ID)
+        .verificationChecks.create({
+          to: `+91${req.session.register.number}`,
+          code: req.body.otp,
+        })
+        .then(async (data) => {
+          // Hash password
+          const hashedPassword = await bcrypt.hash(
+            req.session.register.password,
+            10
+          );
+
+          // Create a user
+          const user = new User({
+            name: req.session.register.name,
+            email: req.session.register.email,
+            number: req.session.register.number,
+            password: hashedPassword,
+          });
+
+          user
+            .save()
+            .then((user) => {
+              req.logIn(user, (err) => {
+                if (err) {
+                  req.flash("error", info.message);
+                  return next(err);
+                }
+                return res.redirect("/");
+              });
+            })
+            .catch((err) => {
+              req.flash("error", " Error creating user");
+              console.log(err);
+              return res.redirect("/register");
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+          req.flash("error", " Error creating user");
+        });
+    },
+
+    async postLogin(req, res, next) {
       const { email, password } = req.body;
       // Validate request
       if (!email || !password) {
         req.flash("error", "All fields are required");
         return res.redirect("/login");
       }
+
+      await User.findOne({ email: req.body.email }).then((response) => {
+        checkuser = response;
+        if (checkuser.isBlocked === true) {
+          req.flash("error", "This account is temporarily blocked.");
+          return res.redirect("/login");
+        }
+      });
+
       passport.authenticate("local", (err, user, info) => {
         if (err) {
           req.flash("error", info.message);
@@ -52,6 +140,36 @@ function authController() {
         req.flash("email", email);
         return res.redirect("/register");
       }
+      const numberRegexExp = /^[6-9]\d{9}$/gi;
+      const validnumber = numberRegexExp.test(number);
+      if (!validnumber) {
+        req.flash("error", "Enter a valid number. (Indian)");
+        req.flash("name", name);
+        req.flash("number", number);
+        req.flash("email", email);
+        return res.redirect("/register");
+      }
+
+      const passwordRegexExp = /^.{6,}$/;
+      const validpassword = passwordRegexExp.test(password);
+      if (!validpassword) {
+        req.flash("error", "Password should be minimum 6 characters.");
+        req.flash("name", name);
+        req.flash("number", number);
+        req.flash("email", email);
+        return res.redirect("/register");
+      }
+
+      const emailRegexExp =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+      const validemail = emailRegexExp.test(email);
+      if (!validemail) {
+        req.flash("error", "Enter a valid email");
+        req.flash("name", name);
+        req.flash("number", number);
+        req.flash("email", email);
+        return res.redirect("/register");
+      }
 
       // Check if email exists
       await User.exists({ email: email }, (err, result) => {
@@ -64,32 +182,41 @@ function authController() {
         }
       });
 
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
+      req.session.register = {
+        name: name,
+        email: email,
+        number: number,
+        password: password,
+      };
 
-      // Create a user
-      const user = new User({
-        name,
-        email,
-        number,
-        password: hashedPassword,
-      });
+      return res.redirect("/otplogin");
 
-      user
-        .save()
-        .then((user) => {
-          req.logIn(user, (err) => {
-            if (err) {
-              req.flash("error", info.message);
-              return next(err);
-            }
-            return res.redirect("/");
-          });
-        })
-        .catch((err) => {
-          req.flash("error", " Error creating user");
-          return res.redirect("/register");
-        });
+      // // Hash password
+      // const hashedPassword = await bcrypt.hash(password, 10);
+
+      // // Create a user
+      // const user = new User({
+      //   name,
+      //   email,
+      //   number,
+      //   password: hashedPassword,
+      // });
+
+      // user
+      //   .save()
+      //   .then((user) => {
+      //     req.logIn(user, (err) => {
+      //       if (err) {
+      //         req.flash("error", info.message);
+      //         return next(err);
+      //       }
+      //       return res.redirect("/");
+      //     });
+      //   })
+      //   .catch((err) => {
+      //     req.flash("error", " Error creating user");
+      //     return res.redirect("/register");
+      //   });
     },
 
     logout(req, res) {
@@ -154,6 +281,55 @@ function authController() {
           console.log(err);
         } else {
           return res.redirect("/");
+        }
+      });
+    },
+
+    async blockuser(req, res) {
+      let usertoblock;
+      // console.log(req.body);
+      await User.findOne({ email: req.body.user.email }).then((response) => {
+        usertoblock = response;
+        if (usertoblock) {
+          // console.log(usertoblock);
+          usertoblock.isBlocked = true;
+          usertoblock.save();
+        }
+      });
+      return res.redirect("/admin/customers");
+    },
+
+    async unblockuser(req, res) {
+      let usertounblock;
+      // console.log(req.body);
+      await User.findOne({ email: req.body.user.email }).then((response) => {
+        usertounblock = response;
+      });
+      if (usertounblock) {
+        // console.log(usertoblock);
+        usertounblock.isBlocked = false;
+        usertounblock.save();
+      }
+
+      return res.redirect("/admin/customers");
+    },
+
+    async removeuser(req, res) {
+      // Delete Orders By User
+      Order.deleteMany({ customerId: req.body.user.id })
+        .then(function () {
+          console.log("Data deleted"); // Success
+        })
+        .catch(function (error) {
+          console.log(error); // Failure
+        });
+
+      // Delete user
+      User.findOneAndDelete({ email: req.body.user.email }, function (err) {
+        if (err) {
+          console.log(err);
+        } else {
+          return res.redirect("/admin/customers");
         }
       });
     },
