@@ -45,6 +45,19 @@
         />
       </div>
       <div class="mb-4">
+        <label class="block text-gray-700 text-lg font-bold mb-2" for="address">
+          Default Address
+        </label>
+        <input
+          name="address"
+          value="<%= user.address %>"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="address"
+          type="text"
+          placeholder="Enter default address"
+        />
+      </div>
+      <div class="mb-4">
         <label
           class="block text-gray-700 text-lg font-bold mb-2"
           for="username"
@@ -75,6 +88,7 @@
           placeholder="******************"
         />
       </div>
+
       <div class="flex items-center justify-between">
         <button
           class="btn-primary rounded-full text-white font-bold py-2 px-4 w-2/3 rounded focus:outline-none focus:shadow-outline mx-auto"

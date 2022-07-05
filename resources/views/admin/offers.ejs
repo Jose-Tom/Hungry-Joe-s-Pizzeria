@@ -1,0 +1,63 @@
+<div class="background-secondary">
+  <div class="container container-fluid offerTable mx-auto">
+    <div class="mb-10">
+      <a
+        class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none btn-primary"
+        href="/admin/addoffer"
+      >
+        Generate new coupon code
+      </a>
+    </div>
+    <table id="myOfferTable" class="display" style="width: 100%">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Discount</th>
+          <th>Edit Code</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% Offers.forEach((offer) => { %>
+
+        <tr>
+          <form action="/admin/editoffer" method="POST">
+            <td><%= offer.code %></td>
+            <td><%= offer.discount %></td>
+            <td>
+              <input type="hidden" name="code" value="<%= offer.code %>" />
+              <input
+                type="hidden"
+                name="discount"
+                value="<%= offer.discount %>"
+              />
+              <button
+                class="edit-offer btn btn-primary btn-xs block px-5 py-2 rounded-full text-white"
+                data-offer="<%= JSON.stringify(offer) %>"
+              >
+                Edit
+              </button>
+            </td>
+          </form>
+          <td>
+            <button
+              class="remove-offer btn btn-danger btn-xs block px-5 py-2 rounded-full text-white"
+              data-offer="<%= JSON.stringify(offer) %>"
+            >
+              Remove
+            </button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code</th>
+          <th>Discount</th>
+          <th>Edit Code</th>
+          <th>Remove</th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>

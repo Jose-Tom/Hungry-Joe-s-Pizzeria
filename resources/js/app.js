@@ -2,12 +2,14 @@ import axios from "axios";
 import Noty from "noty";
 import moment from "moment";
 import { initAdmin } from "./admin";
+import { initStripe } from "./stripe";
 import user from "../../app/models/user";
 
 let addToCart = document.querySelectorAll(".add-to-cart");
 let blockUser = document.querySelectorAll(".block-user");
 let unblockUser = document.querySelectorAll(".unblock-user");
 let removeUser = document.querySelectorAll(".remove-user");
+let removeOffer = document.querySelectorAll(".remove-offer");
 
 function updateCart(pizza) {
   // console.log(pizza);
@@ -36,6 +38,7 @@ function updateCart(pizza) {
 addToCart.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     let pizza = JSON.parse(btn.dataset.pizza);
+    //  console.log(pizza);
     updateCart(pizza);
   });
 });
@@ -62,6 +65,16 @@ removeUser.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     let user = JSON.parse(btn.dataset.user);
     axios.post("/admin/removeuser", { user: user }).then((response) => {
+      window.location.reload();
+    });
+  });
+});
+
+removeOffer.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    let code = JSON.parse(btn.dataset.offer).code.toUpperCase();
+    console.log(code);
+    axios.post("/admin/removeoffer", { code: code }).then((response) => {
       window.location.reload();
     });
   });
@@ -107,6 +120,8 @@ function updateStatus(order) {
 }
 
 updateStatus(order);
+
+initStripe();
 
 // Socket
 let socket = io();

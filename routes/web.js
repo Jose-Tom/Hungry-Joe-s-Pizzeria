@@ -59,6 +59,7 @@ function initRoutes(app) {
   // Customer routes
 
   app.post("/orders", auth, orderController().store);
+  app.post("/coupon/apply", cartController().couponApply);
   app.get("/cart", cartController().index);
   app.post("/cart/update", cartController().update);
   app.post("/emptycart", cartController().delete);
@@ -72,7 +73,13 @@ function initRoutes(app) {
   app.get("/admin/orders", admin, adminOrderController().index);
   app.post("/admin/order/status", admin, statusController().update);
   app.get("/admin/customers", admin, dataController().showCustomers);
+  app.get("/admin/offers", admin, dataController().offersPage);
+  app.get("/admin/addoffer", admin, dataController().addofferPage);
+  app.post("/admin/addoffer", admin, dataController().addoffer);
+  app.post("/admin/editoffer", admin, dataController().editofferpage);
+  app.post("/admin/removeoffer", admin, dataController().removeoffer);
   app.get("/admin/menuitems", admin, dataController().menuItemsPage);
+  app.post("/admin/updateoffer", admin, dataController().updateoffer);
   app.get("/admin/additem", admin, dataController().addItemsPage);
   app.post(
     "/admin/additem",
@@ -83,6 +90,7 @@ function initRoutes(app) {
 
   app.post("/admin/edititem", admin, dataController().editItemPage);
   app.post("/admin/deleteitem", admin, dataController().deleteItem);
+  app.post("/admin/restoreitem", admin, dataController().restoreItem);
   app.post(
     "/admin/updateitem",
     admin,

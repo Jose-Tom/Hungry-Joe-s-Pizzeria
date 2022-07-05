@@ -40,7 +40,14 @@
             ></button>
           </form>
         </div>
+        <% if (pizza.discount === 0) { %>
         <span class="font-bold text-lg">₹ <%= pizza.price * pizza.qty %></span>
+        <% } else{ %>
+        <span class="font-bold text-lg"
+          >₹ <%= (pizza.price - ((pizza.price*pizza.discount)/100))*pizza.qty
+          %></span
+        >
+        <% } %>
       </div>
       <% } %>
       <!-- <% for(let pizza of Object.values(session.cart.cartItems.items)) { %>
@@ -81,11 +88,73 @@
         </div>
         <% if(user) { %>
         <div>
-          <form action="/orders" method="post" class="mt-12">
+          <form action="/coupon/apply" method="post" class="mt-12">
+            <input
+              name="code"
+              class="border border-gray-400 p-2 w-1/2 mb-4"
+              type="text"
+              value="<%= session.couponcode? session.couponcode:'' %>"
+              placeholder="coupon code..."
+            />
+            <button
+              class="btn-primary px-6 py-2 rounded-full text-white font-bold mt-6 mb-6 w-1/2"
+              type="submit"
+            >
+              Apply Coupon
+            </button>
+          </form>
+          <% if(session.coupondiscount) { %>
+          <div>
+            <span class="text-lg font-bold">Total Amount:</span>
+            <s
+              ><span class="amount text-2xl font-bold ml-2"
+                >₹<%= session.cart.cartItems.totalPrice %></span
+              ></s
+            >
+            <span class="amount text-2xl font-bold ml-2"
+              >₹<%= session.cart.cartItems.totalPrice -
+              (session.cart.cartItems.totalPrice*session.coupondiscount)/100
+              %></span
+            >
+          </div>
+          <div>
+            <span class="text-lg font-bold">Savings:</span>
+            <span class="amount text-2xl font-bold ml-2"
+              >₹ <%=
+              (session.cart.cartItems.totalPrice*session.coupondiscount)/100
+              %></span
+            >
+          </div>
+          <% } %>
+          <form action="/orders" method="post" class="mt-12" id="payment-form">
             <% if(messages.error) { %>
             <span class="text-red-500 text-sm"><%= messages.error %></span>
             <br />
             <% } %>
+            <div class="relative w-1/2 ml-auto mb-4">
+              <select
+                id="paymentType"
+                name="paymentType"
+                class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline"
+              >
+                <option value="cod">Cash on delivery</option>
+                <option value="card">Pay with card</option>
+              </select>
+              <div
+                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+              >
+                <svg
+                  class="fill-current h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
+                  />
+                </svg>
+              </div>
+            </div>
+
             <input
               name="phone"
               value="<%= user.number %>"
@@ -95,16 +164,18 @@
             />
             <input
               name="address"
-              class="border border-gray-400 p-2 w-1/2"
+              value="<%= user.address %>"
+              class="border border-gray-400 p-2 w-1/2 mb-6"
               type="text"
               placeholder="Address"
             />
             <div>
+              <div id="card-element"></div>
               <button
                 class="btn-primary px-6 py-2 rounded-full text-white font-bold mt-6"
                 type="submit"
               >
-                Order Now
+                Place Order
               </button>
             </div>
           </form>

@@ -92,21 +92,14 @@ function authController() {
 
     async postLogin(req, res, next) {
       const { email, password } = req.body;
+      let checkuser = null;
       // Validate request
       if (!email || !password) {
         req.flash("error", "All fields are required");
         return res.redirect("/login");
       }
 
-      await User.findOne({ email: req.body.email }).then((response) => {
-        checkuser = response;
-        if (checkuser.isBlocked === true) {
-          req.flash("error", "This account is temporarily blocked.");
-          return res.redirect("/login");
-        }
-      });
-
-      passport.authenticate("local", (err, user, info) => {
+      await passport.authenticate("local", async (err, user, info) => {
         if (err) {
           req.flash("error", info.message);
           return next(err);
@@ -115,12 +108,21 @@ function authController() {
           req.flash("error", info.message);
           return res.redirect("/login");
         }
-        req.logIn(user, (err) => {
-          if (err) {
-            req.flash("error", info.message);
-            return next(err);
+
+        await User.findOne({ email: email }).then(async (response) => {
+          checkuser = response;
+          if (checkuser && checkuser.isBlocked === true) {
+            req.flash("error", "This account is temporarily blocked.");
+            return res.redirect("/login");
+          } else {
+            await req.logIn(user, (err) => {
+              if (err) {
+                req.flash("error", info.message);
+                return next(err);
+              }
+              return res.redirect(_getRedirectUrl(req));
+            });
           }
-          return res.redirect(_getRedirectUrl(req));
         });
       })(req, res, next);
     },
@@ -233,7 +235,7 @@ function authController() {
     },
 
     async update(req, res) {
-      const { name, email, number, password } = req.body;
+      const { name, email, number, password, address } = req.body;
 
       // Validate request
       if (!name || !email || !number) {
@@ -255,6 +257,7 @@ function authController() {
           password: hashedPassword,
           email,
           number,
+          address,
         }
       ).exec(function (err, user) {
         if (err) {

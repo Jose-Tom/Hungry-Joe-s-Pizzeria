@@ -46,7 +46,7 @@
           name="discount"
           id="discount"
           class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium outline-none focus:shadow-md"
-          value="<%= pizza.number %>"
+          value="<%= pizza.discount %>"
         />
       </div>
       <div class="mb-5">
@@ -66,7 +66,7 @@
         </label>
         <input type="file" id="fileinput" name="image" />
       </div>
-      <div>
+      <div class="flex flex-center items-center justify-center p-5">
         <button
           class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none btn-primary"
         >
@@ -74,5 +74,38 @@
         </button>
       </div>
     </form>
+    <div>
+      <% if(pizza.isDeleted === false) {%>
+      <form action="/admin/deleteitem" method="POST">
+        <div class="mt-5 flex flex-center items-center justify-center p-3">
+          <input type="hidden" name="name" value="<%= pizza.name %>" />
+          <input type="hidden" name="category" value="<%= pizza.category %>" />
+          <input type="hidden" name="price" value="<%= pizza.price %>" />
+          <input type="hidden" name="discount" value="<%= pizza.discount %>" />
+          <input type="hidden" name="image" value="<%= pizza.image %>" />
+          <button
+            class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none btn-danger"
+          >
+            Delete item
+          </button>
+        </div>
+      </form>
+      <% } else {%>
+      <form action="/admin/restoreitem" method="POST">
+        <div class="mt-5 flex flex-center items-center justify-center p-3">
+          <input type="hidden" name="name" value="<%= pizza.name %>" />
+          <input type="hidden" name="category" value="<%= pizza.category %>" />
+          <input type="hidden" name="price" value="<%= pizza.price %>" />
+          <input type="hidden" name="discount" value="<%= pizza.discount %>" />
+          <input type="hidden" name="image" value="<%= pizza.image %>" />
+          <button
+            class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none btn-success"
+          >
+            Restore item
+          </button>
+        </div>
+      </form>
+      <% } %>
+    </div>
   </div>
 </div>

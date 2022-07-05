@@ -1,6 +1,7 @@
 const { request } = require("express");
 const { update } = require("../../../models/cart");
 const Cart = require("../../../models/cart");
+const Offers = require("../../../models/offers");
 
 // function cartController() {
 //   return {
@@ -97,6 +98,7 @@ function cartController() {
                 image: "",
                 price: 0,
                 qty: 0,
+                discount: 0,
               },
             ],
             totalPrice: 0,
@@ -113,7 +115,7 @@ function cartController() {
       });
       if (cart) {
         //console.log(cart);
-        //   console.log(req.body);
+        //console.log(req.body);
         const itemToAdd = cart.cartItems.items.find((el) => {
           return el.productId.toString() === req.body._id.toString();
         });
@@ -122,7 +124,8 @@ function cartController() {
           cart.cartItems.items.map((obj) => {
             if (obj.productId === itemToAdd.productId) {
               obj.qty++;
-              cart.cartItems.totalPrice += obj.price;
+              cart.cartItems.totalPrice +=
+                obj.price - (obj.price * obj.discount) / 100;
               cart.cartItems.totalQty += 1;
             }
           });
@@ -135,11 +138,13 @@ function cartController() {
             productId: req.body._id,
             name: req.body.name,
             category: req.body.category,
-            price: req.body.price,
+            price: req.body.price - (req.body.price * req.body.discount) / 100,
             image: req.body.image,
+            discount: req.body.discount,
             qty: 1,
           });
-          cart.cartItems.totalPrice += req.body.price;
+          cart.cartItems.totalPrice +=
+            req.body.price - (req.body.price * req.body.discount) / 100;
           cart.cartItems.totalQty += 1;
           cart.save();
           req.session.cart = cart;
@@ -150,15 +155,18 @@ function cartController() {
           customerId: req.user._id,
           deleted: false,
           cartItems: {
-            totalPrice: req.body.price,
+            totalPrice:
+              req.body.price - (req.body.price * req.body.discount) / 100,
             totalQty: 1,
             items: [
               {
                 productId: req.body._id,
                 name: req.body.name,
-                price: req.body.price,
+                price:
+                  req.body.price - (req.body.price * req.body.discount) / 100,
                 image: req.body.image,
                 category: req.body.category,
+                discount: req.body.discount,
                 qty: 1,
               },
             ],
@@ -173,7 +181,7 @@ function cartController() {
           })
           .catch((err) => {
             req.flash("error", "Something went wrong");
-            return res.redirect("/cart");
+            //  return res.redirect("/cart");
           });
       }
       return res.json({ totalQty: req.session.cart.cartItems.totalQty });
@@ -191,6 +199,7 @@ function cartController() {
               image: "",
               price: 0,
               qty: 0,
+              discount: 0,
             },
           ],
           totalPrice: 0,
@@ -200,7 +209,8 @@ function cartController() {
         customerId: "",
         deleted: true,
       };
-
+      req.session.coupondiscount = null;
+      req.session.couponcode = null;
       res.render("customers/cart");
     },
 
@@ -239,7 +249,8 @@ function cartController() {
                   (obj) => obj.productId !== itemToEdit.productId
                 );
               }
-              cart.cartItems.totalPrice -= obj.price;
+              cart.cartItems.totalPrice -=
+                obj.price - (obj.price * obj.discount) / 100;
               cart.cartItems.totalQty -= 1;
             }
           });
@@ -266,13 +277,14 @@ function cartController() {
           cart.cartItems.items.map((obj) => {
             if (obj.productId === itemToEdit.productId) {
               obj.qty++;
-              cart.cartItems.totalPrice += obj.price;
+              cart.cartItems.totalPrice +=
+                obj.price - (obj.price * obj.discount) / 100;
               cart.cartItems.totalQty += 1;
             }
           });
           cart.save();
           req.session.cart = cart;
-          //  console.log(req.session.cart);
+          // console.log(req.session.cart.cartItems.items);
         }
         return res.render("customers/cart");
       }
@@ -283,6 +295,16 @@ function cartController() {
       // cart.totalPrice = cart.totalPrice + parseInt(req.body.price);
 
       // return res.render("customers/cart");
+    },
+
+    async couponApply(req, res) {
+      const code = req.body.code.toUpperCase();
+      // console.log(code);
+      await Offers.findOne({ code: code }).then((response) => {
+        req.session.coupondiscount = response.discount;
+        req.session.couponcode = response.code;
+        return res.render("customers/cart");
+      });
     },
   };
 }

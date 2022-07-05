@@ -1,0 +1,50 @@
+<div class="add-items flex items-center justify-center p-12">
+  <div class="mx-auto w-full max-w-[550px]">
+    <h1 class="text-2xl font-bold py-5">Add offer</h1>
+    <form action="/admin/updateoffer" method="POST">
+      <div class="mb-5">
+        <% if(messages.error) { %>
+        <span class="text-red-500 text-sm"><%= messages.error %></span>
+        <% } %>
+        <label
+          for="code"
+          class="mb-3 block text-base font-medium text-[#07074D]"
+        >
+          Coupon Code
+        </label>
+        <input
+          type="text"
+          name="code"
+          id="code"
+          value="<%= offer.code %>"
+          readonly
+          class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-black outline-none focus:shadow-md"
+        />
+      </div>
+
+      <div class="mb-5">
+        <label
+          for="discount"
+          class="mb-3 block text-base font-medium text-black"
+        >
+          Discount Percentage
+        </label>
+        <input
+          type="number"
+          name="discount"
+          id="discount"
+          value="<%= offer.discount %>"
+          class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium outline-none focus:shadow-md"
+        />
+      </div>
+
+      <div>
+        <button
+          class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none btn-primary"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
