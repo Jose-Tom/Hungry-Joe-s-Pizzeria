@@ -13,7 +13,6 @@
   "author": "Jose",
   "license": "MIT",
   "dependencies": {
-    "@stripe/stripe-js": "^1.32.0",
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "chart.js": "^3.8.0",
@@ -31,8 +30,8 @@
     "passport": "^0.6.0",
     "passport-google-oauth2": "^0.2.0",
     "passport-local": "^1.0.0",
+    "razorpay": "^2.8.2",
     "socket.io": "^4.5.1",
-    "stripe": "^9.11.0",
     "twilio": "^3.78.0"
   },
   "devDependencies": {

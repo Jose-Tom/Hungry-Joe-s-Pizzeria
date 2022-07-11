@@ -2,8 +2,6 @@ import axios from "axios";
 import Noty from "noty";
 import moment from "moment";
 import { initAdmin } from "./admin";
-import { initStripe } from "./stripe";
-import user from "../../app/models/user";
 
 let addToCart = document.querySelectorAll(".add-to-cart");
 let blockUser = document.querySelectorAll(".block-user");
@@ -120,8 +118,6 @@ function updateStatus(order) {
 }
 
 updateStatus(order);
-
-initStripe();
 
 // Socket
 let socket = io();

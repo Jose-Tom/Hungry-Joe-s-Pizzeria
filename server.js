@@ -87,6 +87,12 @@ const server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
 
+// Instantiate razorpay
+// var instance = new Razorpay({
+//   key_id: process.env.RAZORPAY_key_id,
+//   key_secret: process.env.RAZORPAY_key_secret,
+// });
+
 // Socket
 
 const io = require("socket.io")(server);

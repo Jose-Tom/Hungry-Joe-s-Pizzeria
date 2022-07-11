@@ -566,3 +566,22 @@ section.status {
 .StripeElement--webkit-autofill {
   background-color: #fefde5 !important;
 }
+
+#myBarChart7days,
+#myBarChart30days {
+  max-height: 500px;
+  max-width: 30vw;
+}
+
+#myBarMonthlyChart,
+#myPieChart {
+  max-height: 600px;
+  max-width: 40vw;
+}
+
+.chartSeparator {
+  padding: 3rem;
+  margin: 3rem;
+  height: 100%;
+  width: 100%;
+}

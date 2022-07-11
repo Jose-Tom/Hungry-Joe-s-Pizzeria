@@ -9,7 +9,7 @@ const orderSchema = new Schema(
       ref: "User",
     },
     items: { type: Object, required: true },
-    totalPrice: { type: String, required: true },
+    totalPrice: { type: Number, required: true },
     phone: { type: String, required: true },
     address: { type: String, required: true },
     paymentType: { type: String, default: "COD" },

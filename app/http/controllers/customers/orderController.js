@@ -1,7 +1,6 @@
 const Order = require("../../../models/order");
 const Cart = require("../../../models/cart");
 const moment = require("moment");
-const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 
 function orderController() {
   return {
@@ -29,86 +28,9 @@ function orderController() {
             result,
             { path: "customerId" },
             async (err, placedOrder) => {
-              //  req.flash("success", "Order placed successfully");
-
-              // Stripe payment
+              // Card payment
               if (paymentType === "card") {
-                stripe.charges
-                  .create({
-                    amount: req.session.cart.cartItems.totalPrice * 100,
-                    currency: "usd",
-                    source: stripeToken,
-                    description: `Pizza order: ${placedOrder._id}`,
-                  })
-                  .then(async () => {
-                    placedOrder.paymentStatus = true;
-                    placedOrder.paymentType = paymentType;
-                    placedOrder
-                      .save()
-                      .then(async (ord) => {
-                        // Emit
-                        const eventEmitter = req.app.get("eventEmitter");
-                        eventEmitter.emit("orderPlaced", ord);
-                        req.session.cart = {
-                          cartItems: {
-                            items: [
-                              {
-                                productId: "",
-                                name: "",
-                                category: "",
-                                image: "",
-                                price: 0,
-                                qty: 0,
-                                discount: 0,
-                              },
-                            ],
-                            totalPrice: 0,
-                            totalQty: 0,
-                          },
-                          _id: "",
-                          customerId: "",
-                          deleted: true,
-                        };
-                        await Cart.deleteOne({ customerId: req.user._id });
-                        return res.json({
-                          message:
-                            "Payment successful, Order placed successfully",
-                        });
-                      })
-                      .catch((err) => {
-                        console.log(err);
-                      });
-                  })
-                  .catch(async (err) => {
-                    req.session.cart = {
-                      cartItems: {
-                        items: [
-                          {
-                            productId: "",
-                            name: "",
-                            category: "",
-                            image: "",
-                            price: 0,
-                            qty: 0,
-                            discount: 0,
-                          },
-                        ],
-                        totalPrice: 0,
-                        totalQty: 0,
-                      },
-                      _id: "",
-                      customerId: "",
-                      deleted: true,
-                    };
-                    await Cart.deleteOne({ customerId: req.user._id });
-                    console.log(err);
-                    return res.json({
-                      message:
-                        "OrderPlaced but payment failed, You can pay at delivery time",
-                    });
-                  });
               } else {
-                // delete req.session.cart;
                 req.session.cart = {
                   cartItems: {
                     items: [
@@ -139,42 +61,6 @@ function orderController() {
           return res.status(500).json({ message: "Something went wrong" });
         });
     },
-
-    // req.session.cart = {
-    //   cartItems: {
-    //     items: [
-    //       {
-    //         productId: "",
-    //         name: "",
-    //         category: "",
-    //         image: "",
-    //         price: 0,
-    //         qty: 0,
-    //         discount: 0,
-    //       },
-    //     ],
-    //     totalPrice: 0,
-    //     totalQty: 0,
-    //   },
-    //   _id: "",
-    //   customerId: "",
-    //   deleted: true,
-    // };
-    // await Cart.deleteOne({ customerId: req.user._id });
-    // // Emit
-    // const eventEmitter = req.app.get("eventEmitter");
-    // eventEmitter.emit("orderPlaced", placedOrder);
-    // // return res.redirect("/customer/orders");
-    // return res.json({ message: "Order placed successfully" });
-    //         }
-    //       );
-    //     })
-    //     .catch((err) => {
-    //       // req.flash("error", "Something went wrong");
-    //       //  return res.redirect("/cart");
-    //       return res.json({ message: "Error placing order" });
-    //     });
-    // },
 
     async index(req, res) {
       const orders = await Order.find({ customerId: req.user._id }, null, {

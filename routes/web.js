@@ -71,6 +71,26 @@ function initRoutes(app) {
 
   // Admin routes
   app.get("/admin/orders", admin, adminOrderController().index);
+  app.get(
+    "/admin/orders/orderslist7",
+    admin,
+    adminOrderController().sendOrdersList7
+  );
+  app.get(
+    "/admin/orders/orderslist30",
+    admin,
+    adminOrderController().sendOrdersList30
+  );
+  app.get(
+    "/admin/orders/orderslistMonthly",
+    admin,
+    adminOrderController().sendOrdersListMonthly
+  );
+  app.get(
+    "/admin/orders/orderslistPieChart",
+    admin,
+    adminOrderController().sendOrdersListPieChart
+  );
   app.post("/admin/order/status", admin, statusController().update);
   app.get("/admin/customers", admin, dataController().showCustomers);
   app.get("/admin/offers", admin, dataController().offersPage);

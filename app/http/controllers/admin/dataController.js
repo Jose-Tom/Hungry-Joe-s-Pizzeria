@@ -69,7 +69,7 @@ function dataController() {
 
     reports(req, res) {
       Order.find().then((orders) => {
-        console.log(orders);
+        // console.log(orders);
         return res.render("admin/report", { orders: orders });
       });
     },

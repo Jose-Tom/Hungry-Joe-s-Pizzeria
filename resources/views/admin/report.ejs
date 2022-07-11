@@ -39,4 +39,287 @@
       </tfoot>
     </table>
   </div>
+  <div class="grid grid-cols-2 justify-center p-10">
+    <div
+      class="chartSeparator grid grid-cols-1 justify-items-center justify-self-center"
+    >
+      <canvas id="myBarChart7days"></canvas>
+      <a
+        id="downloadchart1"
+        download="ChartImage7day.jpg"
+        href=""
+        class="btn btn-secondary"
+      >
+        <button class="btn btn-primary btn-xs text-white w-20">Download</button>
+      </a>
+    </div>
+
+    <div class="chartSeparator grid grid-cols-1 place-items-center">
+      <canvas id="myBarChart30days"></canvas>
+      <a
+        id="downloadchart3"
+        download="ChartImage30days.jpg"
+        href=""
+        class="btn btn-secondary"
+      >
+        <button class="btn btn-primary btn-xs text-white w-20">Download</button>
+      </a>
+    </div>
+  </div>
+  <div class="mx-auto grid grid-cols-1">
+    <div class="chartSeparator grid grid-cols-1 place-items-center">
+      <h1 class="mb-10 font-bold text-3xl text-center">
+        Monthly Revenue - Last 12 Months
+      </h1>
+      <canvas id="myBarMonthlyChart"></canvas>
+
+      <a
+        id="downloadchart2"
+        download="ChartImageMonthly.jpg"
+        class="btn btn-secondary"
+      >
+        <button class="btn btn-primary btn-xs text-white w-20">Download</button>
+      </a>
+    </div>
+
+    <div class="chartSeparator grid grid-cols-1 place-items-center">
+      <h1 class="mb-10 font-bold text-3xl text-center">
+        Order count by payment type
+      </h1>
+      <canvas id="myPieChart"></canvas>
+      <a
+        id="downloadchart4"
+        download="PaymentTypesSplit.jpg"
+        class="btn btn-secondary"
+      >
+        <button class="btn btn-primary btn-xs text-white w-20">Download</button>
+      </a>
+    </div>
+  </div>
 </div>
+
+<script>
+  function getBarChart7days() {
+    let orderTotals = [];
+    let orderDays = [];
+
+    fetch("/admin/orders/orderslist7").then(async (res) => {
+      await res.json().then((data) => {
+        data.orders.forEach((item) => {
+          // console.log(item._id, item.totalSales);
+          orderTotals.push(item.totalSales);
+          orderDays.push(item._id);
+        });
+      });
+      const labels = orderDays;
+      // console.log(orderDays, orderTotals);
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: "Total Revenue Sales (Past 7 days)",
+            backgroundColor: "rgb(255, 99, 132)",
+            borderColor: "rgb(255, 99, 132)",
+            data: orderTotals,
+          },
+        ],
+      };
+
+      const config = {
+        type: "line",
+        data: data,
+        options: {},
+      };
+      const myChart = new Chart(
+        document.getElementById("myBarChart7days").getContext("2d"),
+        config
+      );
+    });
+  }
+
+  function getBarChart30days() {
+    let orderTotals = [];
+    let orderDays = [];
+
+    fetch("/admin/orders/orderslist30").then(async (res) => {
+      await res.json().then((data) => {
+        data.orders.forEach((item) => {
+          // console.log(item._id, item.totalSales);
+          orderTotals.push(item.totalSales);
+          orderDays.push(item._id);
+        });
+      });
+      const labels = orderDays;
+      // console.log(orderDays, orderTotals);
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: "Total Revenue Sales (Past 30 days)",
+            backgroundColor: "rgb(14, 12, 145)",
+            borderColor: "rgb(14, 12, 145)",
+            data: orderTotals,
+          },
+        ],
+      };
+
+      const config = {
+        type: "line",
+        data: data,
+        options: {},
+      };
+
+      const myChart2 = new Chart(
+        document.getElementById("myBarChart30days").getContext("2d"),
+        config
+      );
+    });
+  }
+
+  function getBarMonthlyChart() {
+    let orderTotals = [];
+    let orderDays = [];
+
+    fetch("/admin/orders/orderslistMonthly").then(async (res) => {
+      await res.json().then((data) => {
+        data.orders.forEach((item) => {
+          // console.log(item._id, item.totalSales);
+          orderTotals.push(item.totalSales);
+          orderDays.push(item._id);
+        });
+      });
+      const labels = orderDays;
+      // console.log(orderDays, orderTotals);
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: "Monthly Revenue - Sales",
+            backgroundColor: [
+              "green",
+              "red",
+              "blue",
+              "yellow",
+              "red",
+              "blue",
+              "green",
+              "red",
+              "blue",
+              "yellow",
+              "red",
+              "blue",
+            ],
+            borderColor: "rgb(43, 173, 3)",
+            data: orderTotals,
+          },
+        ],
+      };
+
+      const config = {
+        type: "bar",
+        data: data,
+        options: {},
+      };
+
+      const myChart2 = new Chart(
+        document.getElementById("myBarMonthlyChart").getContext("2d"),
+        config
+      );
+    });
+  }
+
+  function getPieChart() {
+    let orderType = [];
+    let orderCount = [];
+
+    fetch("/admin/orders/orderslistPieChart").then(async (res) => {
+      await res.json().then((data) => {
+        data.orders.forEach((item) => {
+          // console.log(item._id, item.totalSales);
+          orderType.push(item._id);
+          orderCount.push(item.totalCount);
+        });
+      });
+      const labels = orderType;
+      // console.log(orderDays, orderTotals);
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            backgroundColor: ["red", "blue", "green", "blue", "red", "blue"],
+            borderColor: "white",
+            data: orderCount,
+          },
+        ],
+      };
+
+      const config = {
+        type: "pie",
+        data: data,
+        options: {},
+      };
+
+      const myChart2 = new Chart(
+        document.getElementById("myPieChart").getContext("2d"),
+        config
+      );
+    });
+  }
+
+  getBarChart7days();
+  getBarChart30days();
+  getBarMonthlyChart();
+  getPieChart();
+
+  document
+    .getElementById("downloadchart1")
+    .addEventListener("click", function () {
+      /*Get image of canvas element*/
+      var url_base64jp = document
+        .getElementById("myBarChart7days")
+        .toDataURL("image/jpg");
+      /*get download button (tag: <a></a>) */
+      var a = document.getElementById("downloadchart1");
+      /*insert chart image url to download button (tag: <a></a>) */
+      a.href = url_base64jp;
+    });
+
+  document
+    .getElementById("downloadchart2")
+    .addEventListener("click", function () {
+      /*Get image of canvas element*/
+      var url_base64jp = document
+        .getElementById("myBarMonthlyChart")
+        .toDataURL("image/jpg");
+      /*get download button (tag: <a></a>) */
+      var a = document.getElementById("downloadchart2");
+      /*insert chart image url to download button (tag: <a></a>) */
+      a.href = url_base64jp;
+    });
+
+  document
+    .getElementById("downloadchart3")
+    .addEventListener("click", function () {
+      /*Get image of canvas element*/
+      var url_base64jp = document
+        .getElementById("myBarChart30days")
+        .toDataURL("image/jpg");
+      /*get download button (tag: <a></a>) */
+      var a = document.getElementById("downloadchart3");
+      /*insert chart image url to download button (tag: <a></a>) */
+      a.href = url_base64jp;
+    });
+
+  document
+    .getElementById("downloadchart4")
+    .addEventListener("click", function () {
+      /*Get image of canvas element*/
+      var url_base64jp = document
+        .getElementById("myPieChart")
+        .toDataURL("image/jpg");
+      /*get download button (tag: <a></a>) */
+      var a = document.getElementById("downloadchart4");
+      /*insert chart image url to download button (tag: <a></a>) */
+      a.href = url_base64jp;
+    });
+</script>
