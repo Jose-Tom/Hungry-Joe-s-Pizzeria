@@ -14,6 +14,9 @@ const orderSchema = new Schema(
     address: { type: String, required: true },
     paymentType: { type: String, default: "COD" },
     paymentStatus: { type: Boolean, default: false },
+    paymentID: { type: String, default: "" },
+    razorpayOrderId: { type: String, default: "" },
+    razorpaySignature: { type: String, default: "" },
     status: { type: String, default: "order_placed" },
   },
   { timestamps: true }

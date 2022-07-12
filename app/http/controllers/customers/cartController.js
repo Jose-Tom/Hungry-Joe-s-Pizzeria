@@ -175,16 +175,16 @@ function cartController() {
         newCart
           .save()
           .then((result) => {
-            // console.log(result);
+            console.log(result);
             req.session.cart = newCart;
-            //    res.render("customers/cart");
           })
           .catch((err) => {
             req.flash("error", "Something went wrong");
-            //  return res.redirect("/cart");
+            console.log(err);
           });
       }
       return res.json({ totalQty: req.session.cart.cartItems.totalQty });
+      // res.redirect("/");
     },
 
     async delete(req, res) {
@@ -301,8 +301,8 @@ function cartController() {
       const code = req.body.code.toUpperCase();
       // console.log(code);
       await Offers.findOne({ code: code }).then((response) => {
-        req.session.coupondiscount = response.discount;
-        req.session.couponcode = response.code;
+        req.session.coupondiscount = response ? response.discount : 0;
+        req.session.couponcode = response ? response.code : "Coupon Invalid";
         return res.render("customers/cart");
       });
     },

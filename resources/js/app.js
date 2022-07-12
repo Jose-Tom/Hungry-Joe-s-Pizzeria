@@ -2,12 +2,14 @@ import axios from "axios";
 import Noty from "noty";
 import moment from "moment";
 import { initAdmin } from "./admin";
+import orderController from "../../app/http/controllers/customers/orderController";
 
 let addToCart = document.querySelectorAll(".add-to-cart");
 let blockUser = document.querySelectorAll(".block-user");
 let unblockUser = document.querySelectorAll(".unblock-user");
 let removeUser = document.querySelectorAll(".remove-user");
 let removeOffer = document.querySelectorAll(".remove-offer");
+let makePayment = document.querySelectorAll(".make-payment");
 
 function updateCart(pizza) {
   // console.log(pizza);
@@ -78,6 +80,75 @@ removeOffer.forEach((btn) => {
   });
 });
 
+makePayment.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    let order = JSON.parse(btn.dataset.order);
+    // console.log(order);
+    loadRazorpay();
+
+    function loadRazorpay() {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onerror = () => {
+        alert("Razorpay SDK failed to load. Are you online?");
+      };
+      script.onload = async () => {
+        try {
+          console.log(order.totalPrice);
+          const result = await axios.post("/create-order", {
+            amount: order.totalPrice,
+          });
+
+          const { amount, id: order_id, currency } = result.data;
+
+          const {
+            data: { key: razorpayKey },
+          } = await axios.get("/get-razorpay-key");
+
+          const options = {
+            key: razorpayKey,
+            amount: amount.toString(),
+            currency: currency,
+            name: order.phone,
+            description: "example transaction",
+            order_id: order_id,
+            handler: async function (response) {
+              const result = await axios
+                .post("/pay-order", {
+                  amount: amount,
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  razorpayOrderId: response.razorpay_order_id,
+                  razorpaySignature: response.razorpay_signature,
+                  order: order,
+                })
+                .then(() => {
+                  setTimeout(function () {
+                    new Noty({
+                      type: "success",
+                      timeout: 1000,
+                      text: res.data.message,
+                      progressBar: false,
+                    }).show();
+                    window.location.href = "/";
+                  }, 2000);
+                });
+            },
+            theme: {
+              color: "#80c0f0",
+            },
+          };
+
+          const paymentObject = new window.Razorpay(options);
+          paymentObject.open();
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      document.body.appendChild(script);
+    }
+  });
+});
+
 // Remove alert message after X seconds
 const alertMsg = document.querySelector("#success-alert");
 if (alertMsg) {
@@ -108,7 +179,7 @@ function updateStatus(order) {
     }
     if (dataProp === order.status) {
       stepCompleted = false;
-      time.innerText = moment(order.updatedAt).format("hh:mm A");
+      time.innerText = moment(order.updatedAt).format("hh:mm  YYYY-MM-DD A");
       status.appendChild(time);
       if (status.nextElementSibling) {
         status.nextElementSibling.classList.add("current");

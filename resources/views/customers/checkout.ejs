@@ -1,0 +1,48 @@
+<div class="py-20 h-screen px-2">
+  <div class="max-w-xl mx-auto rounded-lg overflow-hidden md:max-w-xl">
+    <div class="md:flex">
+      <div class="w-full p-3">
+        <div class="rounded-lg py-5 bg-blue-500">
+          <div class="p-3">
+            <h3 class="text-white">Order confirmation ( Razorpay )</h3>
+            <br />
+            <div class="flex flex-row items-end">
+              <span class="text-white text-3xl font-bold"
+                >Total amount: <%= order.totalPrice %> INR
+              </span>
+            </div>
+          </div>
+          <div class="flex w-full mt-3 mb-3">
+            <span class="border border-dashed w-full border-white"></span>
+          </div>
+          <div class="p-3 space-y-5">
+            <div class="flex flex-col">
+              <span class="text-gray-200">Phone Number</span>
+              <span class="text-white text-lg font-bold"
+                ><%= order.phone %></span
+              >
+            </div>
+            <div class="flex flex-col">
+              <span class="text-gray-200">Address</span>
+              <span class="text-white text-lg font-bold"
+                ><%= order.address %></span
+              >
+            </div>
+            <div class="flex flex-col">
+              <span class="text-gray-200">Payment Type</span>
+              <span class="text-white text-lg font-bold">Card Payment</span>
+            </div>
+          </div>
+          <div class="flex flex-col">
+            <button
+              class="make-payment btn-primary px-6 py-2 rounded-full text-white font-bold mt-6 mx-auto"
+              data-order="<%= JSON.stringify(order) %>"
+            >
+              Make payment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

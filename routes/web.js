@@ -5,6 +5,10 @@ const orderController = require("../app/http/controllers/customers/orderControll
 const adminOrderController = require("../app/http/controllers/admin/orderController");
 const statusController = require("../app/http/controllers/admin/statusController");
 const dataController = require("../app/http/controllers/admin/dataController");
+const dotenv = require("dotenv");
+const Razorpay = require("razorpay");
+
+dotenv.config();
 
 // Middlewares
 const guest = require("../app/http/middlewares/guest");
@@ -13,6 +17,8 @@ const admin = require("../app/http/middlewares/admin");
 const confirmpassword = require("../app/http/middlewares/confirmpassword");
 
 const multer = require("multer");
+const Order = require("../app/models/order");
+const Cart = require("../app/models/cart");
 
 //define storage for the images
 
@@ -68,6 +74,7 @@ function initRoutes(app) {
   app.get("/customer/orders", auth, orderController().index);
   app.get("/customer/orders/:id", auth, orderController().show);
   app.get("/customer/profile", auth, authController().profile);
+  app.get("/customer/checkout", auth, orderController().checkoutPage);
 
   // Admin routes
   app.get("/admin/orders", admin, adminOrderController().index);
@@ -122,6 +129,85 @@ function initRoutes(app) {
   app.post("/admin/blockuser", admin, authController().blockuser);
   app.post("/admin/unblockuser", admin, authController().unblockuser);
   app.post("/admin/removeuser", admin, authController().removeuser);
+
+  // RAZORPAY
+  app.get("/get-razorpay-key", (req, res) => {
+    res.send({ key: process.env.RAZORPAY_KEY_ID });
+  });
+
+  app.post("/create-order", async (req, res) => {
+    try {
+      const instance = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_SECRET,
+      });
+      const options = {
+        amount: req.body.amount * 100,
+        currency: "INR",
+      };
+
+      const order = await instance.orders.create(options);
+      if (!order) {
+        return res.status(500).send("Some error occured");
+      }
+
+      res.send(order);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
+
+  app.post("/pay-order", async (req, res) => {
+    try {
+      const { amount, razorpayPaymentId, razorpayOrderId, razorpaySignature } =
+        req.body;
+
+      const order = new Order({
+        customerId: req.user._id,
+        totalPrice: amount / 100,
+        items: req.session.cart?.cartItems.items,
+        paymentType: "card",
+        paymentStatus: true,
+        paymentId: razorpayPaymentId,
+        razorpayOrderId,
+        razorpaySignature,
+        phone: req.body.order.phone,
+        address: req.body.order.address,
+      });
+      await order.save();
+
+      req.session.cart = {
+        cartItems: {
+          items: [
+            {
+              productId: "",
+              name: "",
+              category: "",
+              image: "",
+              price: 0,
+              qty: 0,
+              discount: 0,
+            },
+          ],
+          totalPrice: 0,
+          totalQty: 0,
+        },
+        _id: "",
+        customerId: "",
+        deleted: true,
+      };
+      await Cart.deleteOne({ customerId: req.user._id });
+      res.send({
+        msg: "Payment was successfull",
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  app.get("*", function (req, res) {
+    res.render("404");
+  });
 }
 
 module.exports = initRoutes;

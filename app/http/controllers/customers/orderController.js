@@ -1,21 +1,102 @@
 const Order = require("../../../models/order");
 const Cart = require("../../../models/cart");
 const moment = require("moment");
+const axios = require("axios");
 
 function orderController() {
   return {
+    checkoutPage(req, res) {
+      return res.render("customers/checkout");
+    },
+
     store(req, res) {
       // Validate request
-      const { phone, address, paymentType, stripeToken } = req.body;
+      const { phone, address, paymentType } = req.body;
       if (!phone || !address) {
         // req.flash("error", "All fields are required");
         //return res.redirect("/cart");
         return res.json({ message: "All fields are required" });
       }
+      // req.session.cart.cartItems.totalPrice =
+      //   req.session.cart.cartItems.totalPrice -
+      //   (req.session.cart.cartItems.totalPrice * req.session.coupondiscount) /
+      //     100;
       // console.log(req.session.cart);
+      // Card payment
+      let totalPrice = req.session.cart.cartItems.totalPrice;
+      const coupondiscount = req.session.coupondiscount
+        ? req.session.coupondiscount
+        : 0;
+      totalPrice = totalPrice - (totalPrice * coupondiscount) / 100;
+
+      if (paymentType === "card") {
+        // axios
+        //   .get("/get-razorpay-key")
+        //   .then((res) => {
+        //     console.log(res.body);
+        //   })
+        //   .catch((error) => {
+        //     console.error(error);
+        //   });
+        // axios
+        //   .post("/create-order", {
+        //     amount: req.session.cart.cartItems.totalPrice,
+        //   })
+        //   .then((res) => {
+        //     console.log(res);
+        //   })
+        //   .catch((error) => {
+        //     console.error(error);
+        //   });
+        // axios
+        //   .post("/pay-order", {
+        //     amount: req.session.cart.cartItems.totalPrice,
+        //   })
+        //   .then((res) => {
+        //     console.log(res);
+        //   })
+        //   .catch((error) => {
+        //     console.error(error);
+        //   });
+
+        const order = {
+          customerId: req.user._id,
+          totalPrice,
+          items: req.session.cart?.cartItems.items,
+          paymentType,
+          phone,
+          address,
+        };
+
+        return res.render("customers/checkout", { order: order });
+
+        // req.session.cart = {
+        //   cartItems: {
+        //     items: [
+        //       {
+        //         productId: "",
+        //         name: "",
+        //         category: "",
+        //         image: "",
+        //         price: 0,
+        //         qty: 0,
+        //         discount: 0,
+        //       },
+        //     ],
+        //     totalPrice: 0,
+        //     totalQty: 0,
+        //   },
+        //   _id: "",
+        //   customerId: "",
+        //   deleted: true,
+        // };
+        // await Cart.deleteOne({ customerId: req.user._id });
+        // return res.json({ message: "Order placed succesfully" });
+      }
+
       const order = new Order({
         customerId: req.user._id,
-        totalPrice: req.session.cart.cartItems.totalPrice,
+        totalPrice,
         items: req.session.cart?.cartItems.items,
         paymentType,
         phone,
@@ -28,32 +109,28 @@ function orderController() {
             result,
             { path: "customerId" },
             async (err, placedOrder) => {
-              // Card payment
-              if (paymentType === "card") {
-              } else {
-                req.session.cart = {
-                  cartItems: {
-                    items: [
-                      {
-                        productId: "",
-                        name: "",
-                        category: "",
-                        image: "",
-                        price: 0,
-                        qty: 0,
-                        discount: 0,
-                      },
-                    ],
-                    totalPrice: 0,
-                    totalQty: 0,
-                  },
-                  _id: "",
-                  customerId: "",
-                  deleted: true,
-                };
-                await Cart.deleteOne({ customerId: req.user._id });
-                return res.json({ message: "Order placed succesfully" });
-              }
+              req.session.cart = {
+                cartItems: {
+                  items: [
+                    {
+                      productId: "",
+                      name: "",
+                      category: "",
+                      image: "",
+                      price: 0,
+                      qty: 0,
+                      discount: 0,
+                    },
+                  ],
+                  totalPrice: 0,
+                  totalQty: 0,
+                },
+                _id: "",
+                customerId: "",
+                deleted: true,
+              };
+              await Cart.deleteOne({ customerId: req.user._id });
+              return res.redirect("/customer/orders");
             }
           );
         })
