@@ -29,7 +29,7 @@ function orderController() {
         : 0;
       totalPrice = totalPrice - (totalPrice * coupondiscount) / 100;
 
-      if (paymentType === "card") {
+      if (paymentType === "card" || paymentType === "paypal") {
         // axios
         //   .get("/get-razorpay-key")
         //   .then((res) => {
@@ -92,51 +92,51 @@ function orderController() {
         // };
         // await Cart.deleteOne({ customerId: req.user._id });
         // return res.json({ message: "Order placed succesfully" });
-      }
-
-      const order = new Order({
-        customerId: req.user._id,
-        totalPrice,
-        items: req.session.cart?.cartItems.items,
-        paymentType,
-        phone,
-        address,
-      });
-      order
-        .save()
-        .then((result) => {
-          Order.populate(
-            result,
-            { path: "customerId" },
-            async (err, placedOrder) => {
-              req.session.cart = {
-                cartItems: {
-                  items: [
-                    {
-                      productId: "",
-                      name: "",
-                      category: "",
-                      image: "",
-                      price: 0,
-                      qty: 0,
-                      discount: 0,
-                    },
-                  ],
-                  totalPrice: 0,
-                  totalQty: 0,
-                },
-                _id: "",
-                customerId: "",
-                deleted: true,
-              };
-              await Cart.deleteOne({ customerId: req.user._id });
-              return res.redirect("/customer/orders");
-            }
-          );
-        })
-        .catch((err) => {
-          return res.status(500).json({ message: "Something went wrong" });
+      } else {
+        const order = new Order({
+          customerId: req.user._id,
+          totalPrice,
+          items: req.session.cart?.cartItems.items,
+          paymentType,
+          phone,
+          address,
         });
+        order
+          .save()
+          .then((result) => {
+            Order.populate(
+              result,
+              { path: "customerId" },
+              async (err, placedOrder) => {
+                req.session.cart = {
+                  cartItems: {
+                    items: [
+                      {
+                        productId: "",
+                        name: "",
+                        category: "",
+                        image: "",
+                        price: 0,
+                        qty: 0,
+                        discount: 0,
+                      },
+                    ],
+                    totalPrice: 0,
+                    totalQty: 0,
+                  },
+                  _id: "",
+                  customerId: "",
+                  deleted: true,
+                };
+                await Cart.deleteOne({ customerId: req.user._id });
+                return res.redirect("/customer/orders");
+              }
+            );
+          })
+          .catch((err) => {
+            return res.status(500).json({ message: "Something went wrong" });
+          });
+      }
     },
 
     async index(req, res) {

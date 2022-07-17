@@ -7,6 +7,7 @@ const statusController = require("../app/http/controllers/admin/statusController
 const dataController = require("../app/http/controllers/admin/dataController");
 const dotenv = require("dotenv");
 const Razorpay = require("razorpay");
+const paypal = require("paypal-rest-sdk");
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ dotenv.config();
 const guest = require("../app/http/middlewares/guest");
 const auth = require("../app/http/middlewares/auth");
 const admin = require("../app/http/middlewares/admin");
+const allowCrossDomain = require("../app/http/middlewares/allowCrossDomain");
 const confirmpassword = require("../app/http/middlewares/confirmpassword");
 
 const multer = require("multer");
@@ -42,7 +44,37 @@ const upload = multer({
   },
 });
 
+// Configure Paypal
+paypal.configure({
+  mode: "sandbox", //sandbox or live
+  client_id:
+    "AcAtmDQAsdhPHDuWCgGh474D9-EFSK2LDHssdfTwf9KUBl2-V7uXVOBv48wYUbBlmjKz7AuuFZvzadgj",
+  client_secret: process.env.PAYPAL_SECRET,
+});
+
 function initRoutes(app) {
+  app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST,PATCH, PUT, DELETE, OPTIONS, REDIRECT"
+    );
+    next();
+  });
+
+  app.all("/*", function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,REDIRECT");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "X-Requested-With,     Content-Type"
+    );
+    next();
+  });
   // ROUTES
   app.get("/", homeController().index);
   app.get("/menu", auth, homeController().menu);
@@ -205,6 +237,54 @@ function initRoutes(app) {
     }
   });
 
+  // PAYPAL
+
+  app.post("/paypal/pay", allowCrossDomain, async (req, res) => {
+    const create_payment_json = {
+      intent: "sale",
+      payer: {
+        payment_method: "paypal",
+      },
+      redirect_urls: {
+        return_url: "/",
+        cancel_url: "/",
+      },
+      transactions: [
+        {
+          item_list: {
+            items: [
+              {
+                name: req.session.user,
+                sku: "001",
+                price: "10.23",
+                currency: "USD",
+                quantity: 1,
+              },
+            ],
+          },
+          amount: {
+            currency: "USD",
+            total: "10.23",
+          },
+          description: "paypal payment test",
+        },
+      ],
+    };
+
+    paypal.payment.create(create_payment_json, function (error, payment) {
+      if (error) {
+        throw error;
+      } else {
+        for (let i = 0; i < payment.links.length; i++) {
+          if (payment.links[i].rel === "approval_url") {
+            res.redirect(payment.links[i].href);
+          }
+        }
+      }
+    });
+  });
+
+  // 404 response
   app.get("*", function (req, res) {
     res.render("404");
   });

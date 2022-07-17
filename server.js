@@ -13,6 +13,11 @@ const Emitter = require("events");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// CORS
+
+const cors = require("cors");
+app.use(cors());
+
 // Database connection
 const url = process.env.MONGO_CONNECTION_URL;
 
