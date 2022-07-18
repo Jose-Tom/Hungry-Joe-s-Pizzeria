@@ -1,6 +1,7 @@
 const Order = require("../../../models/order");
 const User = require("../../../models/user");
 const Menu = require("../../../models/menu");
+const Banner = require("../../../models/banner");
 const Offer = require("../../../models/offers");
 const { Namespace } = require("socket.io");
 
@@ -20,6 +21,10 @@ function dataController() {
 
     addItemsPage(req, res) {
       res.render("admin/additems");
+    },
+
+    editBannerPage(req, res) {
+      res.render("admin/editBanner");
     },
 
     async addItem(req, res) {
@@ -90,7 +95,7 @@ function dataController() {
           isDeleted: true,
         }
       ).then((response) => {
-        console.log(response);
+        //    console.log(response);
         Menu.findOne({ name: req.body.name }).then((pizza) => {
           return res.render("admin/edititems", { pizza: pizza });
         });
@@ -120,7 +125,7 @@ function dataController() {
           isDeleted: false,
         }
       ).then((response) => {
-        console.log(response);
+        //   console.log(response);
         Menu.findOne({ name: req.body.name }).then((pizza) => {
           return res.render("admin/edititems", { pizza: pizza });
         });
@@ -268,6 +273,28 @@ function dataController() {
       ).then((response) => {
         console.log("Success");
         return res.redirect("/admin/offers");
+      });
+    },
+
+    async changebannerimage(req, res) {
+      const { header, description } = req.body;
+
+      // Validate request
+      if (!header || !description) {
+        req.flash("error", "All fields are required");
+        return res.redirect("/admin/editBanner");
+      }
+
+      Banner.findOneAndUpdate(
+        { number: 1 },
+        {
+          header,
+          image: req.file.filename,
+          description,
+        }
+      ).then((response) => {
+        console.log("Success");
+        return res.redirect("/admin/menuitems");
       });
     },
   };

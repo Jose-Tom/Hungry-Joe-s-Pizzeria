@@ -140,11 +140,19 @@ function initRoutes(app) {
   app.get("/admin/menuitems", admin, dataController().menuItemsPage);
   app.post("/admin/updateoffer", admin, dataController().updateoffer);
   app.get("/admin/additem", admin, dataController().addItemsPage);
+  app.get("/admin/editbanner", admin, dataController().editBannerPage);
   app.post(
     "/admin/additem",
     admin,
     upload.single("image"),
     dataController().addItem
+  );
+
+  app.post(
+    "/admin/changebannerimage",
+    admin,
+    upload.single("image"),
+    dataController().changebannerimage
   );
 
   app.post("/admin/edititem", admin, dataController().editItemPage);
@@ -229,9 +237,7 @@ function initRoutes(app) {
         deleted: true,
       };
       await Cart.deleteOne({ customerId: req.user._id });
-      res.send({
-        msg: "Payment was successfull",
-      });
+      return res.redirect("/customer/orders");
     } catch (error) {
       console.log(error);
     }
@@ -240,14 +246,17 @@ function initRoutes(app) {
   // PAYPAL
 
   app.post("/paypal/pay", allowCrossDomain, async (req, res) => {
+    let PORT = process.env.PORT || 3000;
+    let price = req.body.order.totalPrice / 100;
+    //  console.log(req.body);
     const create_payment_json = {
       intent: "sale",
       payer: {
         payment_method: "paypal",
       },
       redirect_urls: {
-        return_url: "/",
-        cancel_url: "/",
+        return_url: `http://localhost:${PORT}/customer/orders`,
+        cancel_url: `http://localhost:${PORT}/`,
       },
       transactions: [
         {
@@ -256,7 +265,7 @@ function initRoutes(app) {
               {
                 name: req.session.user,
                 sku: "001",
-                price: "10.23",
+                price,
                 currency: "USD",
                 quantity: 1,
               },
@@ -264,7 +273,7 @@ function initRoutes(app) {
           },
           amount: {
             currency: "USD",
-            total: "10.23",
+            total: price,
           },
           description: "paypal payment test",
         },
@@ -277,7 +286,7 @@ function initRoutes(app) {
       } else {
         for (let i = 0; i < payment.links.length; i++) {
           if (payment.links[i].rel === "approval_url") {
-            res.redirect(payment.links[i].href);
+            res.send(payment.links[i].href);
           }
         }
       }

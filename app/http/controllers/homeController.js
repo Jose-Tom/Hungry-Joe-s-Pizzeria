@@ -1,4 +1,5 @@
 const Menu = require("../../models/menu");
+const Banner = require("../../models/banner");
 const Cart = require("../../models/cart");
 function homeController() {
   return {
@@ -9,15 +10,20 @@ function homeController() {
           req.session.cart = response;
         });
         Menu.find().then((pizzas) => {
-          return res.render("home", { pizzas: pizzas });
+          Banner.find({ number: 1 }).then((banner) => {
+            return res.render("home", { pizzas: pizzas, banner: banner[0] });
+          });
         });
       } else {
         return res.redirect("admin/orders");
       }
     },
+
     menu(req, res) {
       Menu.find().then((pizzas) => {
-        return res.render("home", { pizzas: pizzas });
+        Banner.find({ number: 1 }).then((banner) => {
+          return res.render("home", { pizzas: pizzas, banner: banner[0] });
+        });
       });
     },
   };

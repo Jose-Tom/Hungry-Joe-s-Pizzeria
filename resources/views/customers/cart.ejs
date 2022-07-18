@@ -1,6 +1,6 @@
 <section class="cart py-16">
   <% if(session.cart?.deleted===false) { %>
-  <div class="order container mx-auto w-1/2">
+  <div class="order container mx-auto xl:w-1/2">
     <div class="flex items-center border-b border-gray-300 pb-4">
       <img src="/img/cart-black.png" alt="" />
       <h1 class="font-bold ml-4 text-2xl">Order summary</h1>
@@ -21,23 +21,19 @@
         <div class="flex w-50 ml-4 text-lg">
           <h1><%= pizza.name %></h1>
         </div>
-        <div class="itemQuantity grid grid-cols-3 ml-4">
+        <div
+          class="itemQuantity flex flex-row align-center justify-around content-center"
+        >
           <form action="/cart/minusitem" method="post">
             <input type="hidden" name="pizza" value="<%= pizza._id %>" />
             <input type="hidden" name="price" value="<%= pizza.price %>" />
-            <button
-              type="submit"
-              class="circle-icon las la-minus-circle"
-            ></button>
+            <button type="submit" class="">-</button>
           </form>
-          <div><%= pizza.qty %> Pcs</div>
+          <p class=""><%= pizza.qty %></p>
           <form action="/cart/plusitem" method="post">
             <input type="hidden" name="pizza" value="<%= pizza._id %>" />
             <input type="hidden" name="price" value="<%= pizza.price %>" />
-            <button
-              type="submit"
-              class="circle-icon las la-plus-circle"
-            ></button>
+            <button type="submit" class="">+</button>
           </form>
         </div>
         <% if (pizza.discount === 0) { %>

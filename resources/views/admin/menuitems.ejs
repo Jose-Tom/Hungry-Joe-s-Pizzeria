@@ -1,15 +1,23 @@
 <div class="background-secondary">
   <section class="menuitemslist container mx-auto py-8">
-    <div class="top-section my-10">
+    <div class="top-section my-10 container mx-auto flex flex-col md:flex-row">
       <h1 class="text-2xl font-bold">All Pizzas</h1>
       <button
-        class="btn-primary py-1 px-6 rounded-full flex items-center font-bold"
+        class="btn-primary py-1 md:px-6 my-5 rounded-full flex items-center font-bold"
       >
-        <a href="/admin/additem" class="ml-4 text-white">Add new item</a>
+        <a href="/admin/additem" class="mx-4 text-white">Add new item</a>
+      </button>
+      <button
+        class="btn-primary py-1 md:px-6 my-5 rounded-full flex items-center font-bold"
+      >
+        <a href="/admin/editbanner" class="mx-4 text-white">Change banner</a>
       </button>
     </div>
 
-    <div id="OrderItems" class="grid grid-cols-4 gap-y-12 gap-x-16">
+    <div
+      id="OrderItems"
+      class="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-y-12 gap-x-16"
+    >
       <% pizzas.forEach((pizza) => { %>
       <form action="/admin/edititem" method="POST">
         <input type="hidden" name="pizza" value="<%= pizza.name %>" />

@@ -275,10 +275,24 @@
   color: #fff;
 }
 
+* {
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
 body {
   font-family: "Lato", sans-serif;
   -webkit-font-smoothing: antialiased;
   color: #232323;
+  max-width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.navbar {
+  max-width: 100vw !important;
+  width: 100%;
 }
 
 nav li .cartbutton {
@@ -347,15 +361,18 @@ section.hero {
   font-weight: 700;
   width: 100%;
   min-height: 50px;
+  max-width: 100vw;
   text-align: center;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: static;
+  bottom: 0;
 }
 
 section.cart {
   background: #f8f8f8;
-  min-height: calc(95vh - 86px);
+  min-height: 100vh;
 }
 section.cart .amount {
   color: #fe5f1e;
@@ -372,7 +389,7 @@ section.login {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(95vh - 86px);
+  min-height: 100vh;
 }
 section.login a {
   color: #fe5f1e;
@@ -387,7 +404,7 @@ section.login a:hover {
 }
 
 .orders {
-  min-height: calc(95vh - 86px);
+  min-height: 100vh;
 }
 
 a.link {
@@ -396,7 +413,7 @@ a.link {
 
 section.status {
   background: #f8f8f8;
-  min-height: calc(100vh - 86px);
+  min-height: 100vh;
 }
 
 .status-box {
@@ -507,19 +524,25 @@ section.status {
   width: 70% !important;
 }
 
-.circle-icon {
-  font-size: 32px !important;
+.itemQuantity {
+  font-size: 1.5rem;
+  width: 2rem;
+}
+
+.itemQuantity p {
+  font-size: 1.2rem;
+  height: auto;
 }
 
 .add-items {
   background: #f8f8f8;
-  min-height: calc(100vh - 86px);
+  min-height: 100vh;
   padding-top: 3rem;
 }
 
 .menuitemslist,
 .index-page {
-  min-height: calc(100vh - 86px);
+  min-height: 100vh;
   padding-top: 3rem;
 }
 
@@ -537,34 +560,9 @@ section.status {
 
 .userTable,
 .offerTable {
-  min-height: calc(100vh - 86px);
+  min-height: 100vh;
   padding-top: 6rem;
   width: 100%;
-}
-
-.StripeElement {
-  box-sizing: border-box;
-  width: 50%;
-  margin-left: auto;
-  height: 40px;
-  padding: 10px 12px;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  background-color: white;
-  box-shadow: 0 1px 3px 0 #e6ebf1;
-  transition: box-shadow 150ms ease;
-}
-
-.StripeElement--focus {
-  box-shadow: 0 1px 3px 0 #cfd7df;
-}
-
-.StripeElement--invalid {
-  border-color: #fa755a;
-}
-
-.StripeElement--webkit-autofill {
-  background-color: #fefde5 !important;
 }
 
 #myBarChart7days,
@@ -584,4 +582,33 @@ section.status {
   margin: 3rem;
   height: 100%;
   width: 100%;
+}
+
+@media (max-width: 1060px) {
+  .container {
+    max-width: 90%;
+  }
+  .itemQuantity {
+    font-size: 1.5rem;
+  }
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 768px) {
+  .status-box ul li span:before {
+    font-size: 34px;
+  }
+  .logo-container img {
+    max-width: 5rem;
+  }
+  .itemQuantity {
+    font-size: 1.2rem;
+  }
+  .itemQuantity p {
+    font-size: 1rem;
+    height: auto;
+  }
 }

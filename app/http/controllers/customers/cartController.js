@@ -183,8 +183,8 @@ function cartController() {
             console.log(err);
           });
       }
-      return res.json({ totalQty: req.session.cart.cartItems.totalQty });
-      // res.redirect("/");
+      return res.json({ totalQty: req.session.cart.cartItems.totalQty || 1 });
+      //  res.redirect("/");
     },
 
     async delete(req, res) {

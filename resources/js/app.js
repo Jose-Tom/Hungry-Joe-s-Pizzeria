@@ -148,9 +148,13 @@ makePayment.forEach((btn) => {
         document.body.appendChild(script);
       }
     } else if (order.paymentType === "paypal") {
-      axios.post("/paypal/pay", {
-        order: order,
-      });
+      axios
+        .post("/paypal/pay", {
+          order: order,
+        })
+        .then((response) => {
+          window.location.href = response.data;
+        });
     }
   });
 });
@@ -198,14 +202,14 @@ updateStatus(order);
 
 // Socket
 let socket = io();
-initAdmin(socket);
+
 // Join
 if (order) {
   socket.emit("join", `order_${order._id}`);
 }
 let adminAreaPath = window.location.pathname;
-console.log(adminAreaPath);
 if (adminAreaPath.includes("admin")) {
+  initAdmin(socket);
   socket.emit("join", "adminRoom");
 }
 

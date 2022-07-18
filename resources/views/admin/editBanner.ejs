@@ -1,0 +1,58 @@
+<div class="add-items flex items-center justify-center p-12">
+  <div class="mx-auto w-full max-w-[550px]">
+    <h1 class="text-2xl font-bold py-5">Edit banner</h1>
+    <form
+      action="/admin/changebannerimage"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <div class="mb-5">
+        <% if(messages.error) { %>
+        <span class="text-red-500 text-sm"><%= messages.error %></span>
+        <% } %>
+        <label
+          for="name"
+          class="mb-3 block text-base font-medium text-[#07074D]"
+        >
+          Banner header
+        </label>
+        <input
+          type="text"
+          name="header"
+          id="header"
+          placeholder="Header text..."
+          class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-black outline-none focus:shadow-md"
+        />
+      </div>
+
+      <div class="mb-5">
+        <label
+          for="description"
+          class="mb-3 block text-base font-medium text-black"
+        >
+          Description
+        </label>
+        <input
+          type="text"
+          name="description"
+          id="description"
+          class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium outline-none focus:shadow-md"
+        />
+      </div>
+
+      <div class="mb-5">
+        <label for="image" class="mb-3 block text-base font-medium">
+          Upload banner image
+        </label>
+        <input type="file" id="fileinput" name="image" />
+      </div>
+      <div>
+        <button
+          class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none btn-primary"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

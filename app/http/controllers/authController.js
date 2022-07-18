@@ -235,15 +235,24 @@ function authController() {
     },
 
     async update(req, res) {
-      const { name, email, number, password, address } = req.body;
+      const { name, email, number, password, confirmpassword, address } =
+        req.body;
 
       // Validate request
-      if (!name || !email || !number) {
-        req.flash("error", "All fields except password are mandatory");
+      if (!name || !email || !number || !confirmpassword) {
+        req.flash("error", "All fields are mandatory");
         req.flash("name", name);
         req.flash("number", number);
         req.flash("email", email);
-        return res.redirect("/user/update");
+        return res.redirect("/customer/profile");
+      }
+
+      if (password !== confirmpassword) {
+        req.flash("error", "Passwords do not match");
+        req.flash("name", name);
+        req.flash("number", number);
+        req.flash("email", email);
+        return res.redirect("/customer/profile");
       }
 
       // Hash password

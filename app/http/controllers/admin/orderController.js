@@ -89,7 +89,7 @@ function orderController() {
           },
         ])
         .then((orders) => {
-          console.log(orders);
+          // console.log(orders);
           return res.send({ orders: orders });
         });
     },
