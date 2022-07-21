@@ -15,6 +15,7 @@ dotenv.config();
 const guest = require("../app/http/middlewares/guest");
 const auth = require("../app/http/middlewares/auth");
 const admin = require("../app/http/middlewares/admin");
+const blockedUser = require("../app/http/middlewares/blockedUser");
 const allowCrossDomain = require("../app/http/middlewares/allowCrossDomain");
 const confirmpassword = require("../app/http/middlewares/confirmpassword");
 
@@ -96,17 +97,22 @@ function initRoutes(app) {
 
   // Customer routes
 
-  app.post("/orders", auth, orderController().store);
+  app.post("/orders", auth, blockedUser, orderController().store);
   app.post("/coupon/apply", cartController().couponApply);
   app.get("/cart", cartController().index);
   app.post("/cart/update", cartController().update);
   app.post("/emptycart", cartController().delete);
   app.post("/cart/minusitem", cartController().minusitem);
   app.post("/cart/plusitem", cartController().plusitem);
-  app.get("/customer/orders", auth, orderController().index);
-  app.get("/customer/orders/:id", auth, orderController().show);
-  app.get("/customer/profile", auth, authController().profile);
-  app.get("/customer/checkout", auth, orderController().checkoutPage);
+  app.get("/customer/orders", auth, blockedUser, orderController().index);
+  app.get("/customer/orders/:id", auth, blockedUser, orderController().show);
+  app.get("/customer/profile", auth, blockedUser, authController().profile);
+  app.get(
+    "/customer/checkout",
+    auth,
+    blockedUser,
+    orderController().checkoutPage
+  );
 
   // Admin routes
   app.get("/admin/orders", admin, adminOrderController().index);
@@ -247,7 +253,7 @@ function initRoutes(app) {
 
   app.post("/paypal/pay", allowCrossDomain, async (req, res) => {
     let PORT = process.env.PORT || 3000;
-    let price = req.body.order.totalPrice / 100;
+    let price = req.body.order.totalPrice;
     //  console.log(req.body);
     const create_payment_json = {
       intent: "sale",

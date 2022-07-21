@@ -3,7 +3,6 @@ const User = require("../../../models/user");
 const Menu = require("../../../models/menu");
 const Banner = require("../../../models/banner");
 const Offer = require("../../../models/offers");
-const { Namespace } = require("socket.io");
 
 function dataController() {
   return {
@@ -73,10 +72,12 @@ function dataController() {
     },
 
     reports(req, res) {
-      Order.find().then((orders) => {
-        // console.log(orders);
-        return res.render("admin/report", { orders: orders });
-      });
+      Order.find()
+        .sort({ createdAt: -1 })
+        .then((orders) => {
+          console.log(orders);
+          return res.render("admin/report", { orders: orders });
+        });
     },
 
     deleteItem(req, res) {

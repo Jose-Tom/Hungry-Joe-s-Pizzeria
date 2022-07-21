@@ -84,7 +84,7 @@ function orderController() {
     async index(req, res) {
       // console.log(req.user);
       if (req.query.PayerID) {
-        let price = req.session.cart.cartItems.totalPrice / 100;
+        let price = req.session.cart.cartItems.totalPrice;
         const payerId = req.query.PayerID;
         const paymentId = req.query.paymentId;
 
@@ -168,12 +168,17 @@ function orderController() {
     },
 
     async show(req, res) {
-      const order = await Order.findById(req.params.id);
-      // Authorize user
-      if (req.user._id.toString() === order.customerId.toString()) {
-        return res.render("customers/singleOrder", { order });
+      const order = await Order.findById(req.params.id).catch((err) => {
+        console.log(err);
+      });
+
+      if (order) {
+        if (req.user._id.toString() === order.customerId.toString()) {
+          return res.render("customers/singleOrder", { order });
+        }
+      } else {
+        return res.redirect("/404");
       }
-      return res.redirect("/");
     },
   };
 }

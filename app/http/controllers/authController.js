@@ -231,6 +231,7 @@ function authController() {
     },
 
     profile(req, res) {
+      console.log(req.user);
       res.render("customers/profile");
     },
 
